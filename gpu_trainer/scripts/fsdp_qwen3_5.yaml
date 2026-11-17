@@ -1,0 +1,33 @@
+# FSDP (PyTorch full-shard, == ZeRO-3) config for Qwen3.8-27B LoRA DPO via
+# accelerate launch. Shards params/grads/optim across all visible GPUs so each
+# card holds ~1/N; add GPUs (sbatch --gres=gpu:N) to lower per-card memory and
+# speed up. num_processes is passed on the accelerate launch CLI (= GPU count),
+# not fixed here, so the same config works for 2/4/6/8 cards.
+compute_environment: LOCAL_MACHINE
+distributed_type: FSDP
+mixed_precision: bf16
+use_cpu: false
+num_machines: 1
+machine_rank: 0
+rdzv_backend: static
+same_network: true
+fsdp_config:
+  fsdp_version: 1
+  # wrap each transformer block (model's own _no_split_modules) as one FSDP unit
+  fsdp_auto_wrap_policy: TRANSFORMER_BASED_WRAP
+  fsdp_transformer_layer_cls_to_wrap: Qwen3_5DecoderLayer,Qwen3_5VisionBlock
+  fsdp_sharding_strategy: FULL_SHARD
+  # 2026-11-01: SHARDED_STATE_DICT + PEFT wrote 0-byte .distcp (adapter LOST, jobs 1038103+1097664);
+  # FULL_STATE_DICT gathers to rank0 CPU and transformers.Trainer.save_model then goes through PeftModel.save_pretrained.
+  fsdp_state_dict_type: FULL_STATE_DICT
+  # REQUIRED for PEFT/LoRA (mixed frozen+trainable params in one flat param)
+  fsdp_use_orig_params: true
+  fsdp_offload_params: false
+  fsdp_backward_prefetch: BACKWARD_PRE
+  fsdp_forward_prefetch: false
+  # rank0 loads the 56GB bf16 weights, others init on meta then sync -> avoids
+  # N x 56GB CPU RAM blowup at load. Trainer's gradient_checkpointing stays on;
+  # do NOT also enable fsdp_activation_checkpointing (would double-wrap).
+  fsdp_cpu_ram_efficient_loading: true
+  fsdp_sync_module_states: true
+  fsdp_activation_checkpointing: false

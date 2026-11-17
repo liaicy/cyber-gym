@@ -1,0 +1,81 @@
+{
+  "audited_at_utc": "2026-10-10T06:57:39.152522+00:00",
+  "status": "resumed_in_detached_tmux",
+  "resume": {
+    "resumed_at_utc": "2026-10-10T06:55:00.264111+00:00",
+    "tmux_session": "rollout41",
+    "launcher": "/data/traj_batch/rollout_train_2026_10_09/launch_resume_20261010.sh",
+    "call_budget": 0,
+    "unit_attempts": 3,
+    "total_calls_at_resume": 1628,
+    "original_valid_records": 55,
+    "config_fingerprint": "334e080cb9eb00e36dc66a918d2293100e2306339ef5592dfd4c6bac79b21130"
+  },
+  "repair": {
+    "revised_at_utc": "2026-10-10T06:54:20.470874+00:00",
+    "fingerprint": "334e080cb9eb00e36dc66a918d2293100e2306339ef5592dfd4c6bac79b21130",
+    "accepted_fingerprints": [
+      "334e080cb9eb00e36dc66a918d2293100e2306339ef5592dfd4c6bac79b21130",
+      "78ccff4fe82530542147fa2f8af1a4be20c967e45d11052138e588fa4662b629"
+    ],
+    "changed_fields": [
+      "call_budget",
+      "retry_delay_seconds",
+      "source_sha256",
+      "unit_attempts"
+    ],
+    "call_budget": 0,
+    "unit_attempts": 3,
+    "retry_delay_seconds": 5,
+    "retained_original_records": 56,
+    "prior_reserved_attempts": 1628,
+    "validation": {
+      "passed_tests": 96,
+      "passed_subtests": 86,
+      "model_judge_calls_during_tests": 0
+    },
+    "user_authorized_unlimited_total_calls": true
+  },
+  "source_sha256": {
+    "examsociety/llm.py": "c0bd62d2d26b206c98628f4759df732dfe5db3d300d4a80072a39a39d7f484e7",
+    "traj/agent.py": "df454e9123c86419edeba56544fe2299f99bff1c9117dcbad80d16f798a5037a",
+    "traj/batch_rollout.py": "2c63df7fffb67edb3153378d57fb506fb3f1e22a27634a315ae6df43887ae450",
+    "traj/chat.py": "ff26f2b66c5e2cb8c2e85ef761efa7d79ffcdccc1f5887b375f51b6cb990bbcb",
+    "traj/collect_batch.py": "700aa762ea1515e0d236dd6ed55981aff57e304855a0035d0338654532c84c36",
+    "traj/collection_failures.py": "0dbabd31835f97b0572bd5d79c6a500037b12de97d5d8ac8d1b6e2eb14038f22",
+    "traj/collection_resume.py": "572d645a4b1569eab6f6534747b7795c22c4bac9508703c5f4faf9e13e5be3c1",
+    "traj/env.py": "7fbd0bbcc8ba31a360f6462db1b104730362cb16106ccf9ef1d90fd6e8ea5bde",
+    "traj/schemas.py": "a5c8b7dff72e59043130eb3da762acf317b0c992311a53ffe6cca9de81c8daa3"
+  },
+  "validation": {
+    "tests_passed": 96,
+    "subtests_passed": 86,
+    "test_network_calls": 0,
+    "original_valid_records_byte_unchanged": 55,
+    "original_error_record_preserved_intact": true,
+    "cumulative_calls_not_reset": true
+  },
+  "startup_snapshot": {
+    "cumulative_calls": 1700,
+    "valid_records": 56,
+    "tracked_unit_attempts": 9,
+    "largest_consumed_unit_attempts": 2,
+    "collector_exit_code_exists": false
+  },
+  "limits": {
+    "total_call_budget": "unlimited (call_budget=0), explicitly authorized",
+    "unit_attempts": 3,
+    "retry_wait_seconds": [
+      5,
+      10
+    ],
+    "unit_error_does_not_halt_batch": true,
+    "models_tasks_sampling_parameters_unchanged": true
+  },
+  "limitations": [
+    "Failed units remain explicit missing supervision; skip-and-continue does not turn failures into valid training negatives",
+    "Preflight disabled models remain reserved for later retry",
+    "Original exception tracebacks were unavailable; imported logs preserve evidence without inventing frames",
+    "GPU/export training fixes are outside this change"
+  ]
+}

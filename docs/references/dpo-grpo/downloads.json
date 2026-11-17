@@ -1,0 +1,69 @@
+{
+  "retrieved_date": "2026-10-20",
+  "files": [
+    {
+      "file": "pdf/01-dapo-2025.pdf",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/a4277440d50f1f15d2cb4c14f7e0c0d2-Paper-Conference.pdf",
+      "resolved_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/a4277440d50f1f15d2cb4c14f7e0c0d2-Paper-Conference.pdf",
+      "conversation_source_url": "https://arxiv.org/pdf/2503.14476",
+      "edition": "formal publication PDF",
+      "bytes": 469396,
+      "sha256": "70ae06c3a506b069f522f370eb34239727f33fba7f9c711c5a1ce91a81580897",
+      "status": "downloaded"
+    },
+    {
+      "file": "pdf/02-rewarding-progress-2025.pdf",
+      "source_url": "https://proceedings.iclr.cc/paper_files/paper/2025/file/98711dea460bdefe0e651ca23ec98ba2-Paper-Conference.pdf",
+      "resolved_url": "https://proceedings.iclr.cc/paper_files/paper/2025/file/98711dea460bdefe0e651ca23ec98ba2-Paper-Conference.pdf",
+      "bytes": 1425058,
+      "sha256": "1b14865b38c3a77f38827045f67297bec1ffe03183cda2559d66c6d31b5a4b1d",
+      "content_type": "application/pdf",
+      "status": "downloaded",
+      "preferred_source_url": "https://openreview.net/pdf?id=A6Y7AqlzLW",
+      "edition": "formal publication PDF",
+      "conversation_source_url": "https://arxiv.org/pdf/2410.08146"
+    },
+    {
+      "file": "pdf/03-reverse-curriculum-r3-2024.pdf",
+      "source_url": "https://raw.githubusercontent.com/mlresearch/v235/main/assets/xi24a/xi24a.pdf",
+      "resolved_url": "https://raw.githubusercontent.com/mlresearch/v235/main/assets/xi24a/xi24a.pdf",
+      "conversation_source_url": "https://arxiv.org/pdf/2402.05808",
+      "edition": "formal publication PDF",
+      "bytes": 1009296,
+      "sha256": "dcb66af32e73d1b8591ae0caecd2bc65b5315d4e97fc6328c89474fc8fc549c1",
+      "status": "downloaded"
+    },
+    {
+      "file": "pdf/04-iterative-reasoning-preference-optimization-2024.pdf",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2024/file/d37c9ad425fe5b65304d500c6edcba00-Paper-Conference.pdf",
+      "resolved_url": "https://proceedings.neurips.cc/paper_files/paper/2024/file/d37c9ad425fe5b65304d500c6edcba00-Paper-Conference.pdf",
+      "conversation_source_url": "https://arxiv.org/pdf/2404.19733",
+      "edition": "formal publication PDF",
+      "bytes": 430242,
+      "sha256": "27739d723498def62b66fcf571e5f13e45fdf63cf400d3cd3f761ceaced259dc",
+      "status": "downloaded"
+    },
+    {
+      "file": "pdf/05-rest-em-2024.pdf",
+      "source_url": "https://arxiv.org/pdf/2312.06585",
+      "resolved_url": "https://arxiv.org/pdf/2312.06585",
+      "bytes": 761238,
+      "sha256": "5ca8f5dd8ba3d8368867ffbba936306f0b3c77c09f5390be00f6915bd49f4964",
+      "content_type": "application/pdf",
+      "status": "downloaded",
+      "preferred_source_url": "https://openreview.net/pdf?id=lNAyUngGFK",
+      "preferred_source_error": "HTTP Error 403: Forbidden",
+      "edition": "arXiv v4, accepted TMLR camera-ready version; OpenReview PDF unavailable"
+    },
+    {
+      "file": "pdf/06-policy-invariance-reward-shaping-1999.pdf",
+      "source_url": "https://people.eecs.berkeley.edu/~russell/papers/icml99-shaping.pdf",
+      "resolved_url": "https://people.eecs.berkeley.edu/~russell/papers/icml99-shaping.pdf",
+      "bytes": 214346,
+      "sha256": "a641bf38a15f97d0ab182cb99a8257eafb9abca0d011434fa0ce1904b322d4e3",
+      "content_type": "application/pdf",
+      "status": "downloaded",
+      "edition": "author-hosted publication PDF"
+    }
+  ]
+}

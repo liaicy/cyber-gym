@@ -1,0 +1,34 @@
+# ExamSociety default configuration.
+# Roles default to the most capable model; the solver panel spans model versions
+# on purpose — psychometric (IRT) estimation needs an ability gradient, and the
+# Opus 4.6 -> 4.7 -> 4.8 line provides one within a single reliable model family.
+
+provider: anthropic
+
+roles:
+  topic_mapper: claude-opus-4-8
+  proposer: claude-opus-4-8
+  validator: claude-opus-4-8
+  hardener: claude-opus-4-8
+
+solvers:
+  - id: opus46
+    model: claude-opus-4-6
+  - id: opus47
+    model: claude-opus-4-7
+  - id: opus48
+    model: claude-opus-4-8
+
+loop:
+  # accept once the panel solve rate is at or below this value
+  target_max_solve_rate: 0.5
+  max_revisions: 3
+  # probability that a revision round injects a misleading-information probe
+  misinfo_probability: 0.5
+  proposal_retries: 2
+  subtopics_per_domain: 12
+
+generation:
+  options_count: 5
+  max_tokens: 4000
+  solver_max_tokens: 2000

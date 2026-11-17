@@ -1,0 +1,136 @@
+# 生产配置 —— Kimi 月度额度耗尽后的主力盘（gpt + claude + deepseek 三家族）。
+#
+# ── 三个角色分属三个家族，这是刻意的 ───────────────────────────────────
+#   出题 gpt-5.5  →  验证 claude-sonnet-5  →  注入 deepseek-v4-pro
+# 3.3 的坑 3 说过：注入者身份固定在一家时，FRAGIL 会混入「注入者家族 × 应试者
+# 家族」的交互；验证者与出题者同族时 key_agrees 因共享盲区而虚高。三个角色
+# 三个家族，这两个混杂一次性都消掉了。
+# 另外把注入者从 k3 换走也是止血 —— k3 上一轮违反了最小编辑约定（改动选项）。
+#
+# ── 钱花在哪 ──────────────────────────────────────────────────────────
+#   deepseek  = 用户自付的按量计费 → 只给【面板席位】(每轮 1 次调用)，
+#               不给角色(反复大 prompt)。30 对约 180 次调用，估算 $0.2 上下
+#   gpt       = s-flag 网关(已购) → 承担出题/topic mapper 这些重活
+#   claude    = Max 订阅经 CLI(本机凭据) → 验证 + 一个面板席位
+#               注意每次 CLI 调用带 ~35k 缓存上下文计入订阅窗口，
+#               约 150 次调用 ≈ $3 等值。跑之前跑之后各看一眼 /usage
+#   kimi      = 月度额度已耗尽，等订阅纪念日重置。恢复后取消下面注释即可
+#
+# ── 启动前(跑批的终端里) ──────────────────────────────────────────────
+#   $env:SFLAG_KEY = "sk-eff7..."           # s-flag 网关
+#   $env:DEEPSEEK_KEY = "sk-bbc4..."        # deepseek 平台
+#   $env:KIMI_MODERATO = "sk-kimi-lnbO..."  # Moderato(1x)，Allegretto 已耗尽
+#   （claude 走 CLI 本机凭据，无需环境变量）
+#   $env:HTTPS_PROXY = "http://127.0.0.1:10080"
+#   $env:HTTP_PROXY  = "http://127.0.0.1:10080"
+#   $env:NO_PROXY    = "api.kimi.com,yyt.s-flag.com,api.deepseek.com"
+
+protocol: openai
+
+_gw:  &gw https://yyt.s-flag.com/v1
+_ds:  &ds https://api.deepseek.com/v1
+
+roles:
+  # 调用极少，用便宜档
+  topic_mapper:
+    {id: gpt-mapper, model: gpt-5.4-mini, protocol: openai, base_url: *gw,
+     api_key_env: SFLAG_KEY, family: gpt}
+  # 出题决定题库的知识天花板，这里不省
+  proposer:
+    {id: gpt-proposer, model: gpt-5.5, protocol: openai, base_url: *gw,
+     api_key_env: SFLAG_KEY, family: gpt}
+  # 两个验证者，分属两个家族(claude + deepseek)。只有第一个通过时才会问第二个，
+  # 所以每一次异议都对应"单验证者设计会放行的题"——异议率就是答案键错误率的
+  # 下界(key_error_lower_bound)。单家族时这个数根本产不出来：同厂模型的第二票
+  # 共享盲区，不是独立意见。
+  validators:
+    - {id: claude-validator, model: claude-sonnet-5, protocol: claude-cli,
+       family: claude}
+    - {id: ds-validator, model: deepseek-v4-pro, protocol: openai, base_url: *ds,
+       api_key_env: DEEPSEEK_KEY, family: deepseek}
+  # 注入者从 deepseek 换成 gpt。实测同一个加难任务：deepseek-v4-pro 烧 5627
+  # 思考 token，gpt-5.5 只要 268 —— 20 倍差距，而 deepseek 是按量付费。
+  # 出题者也是 gpt 会引入"注入者身份绑定作者身份"的混杂(3.3 坑3)，但验证者
+  # 仍是 claude+deepseek 跨两家，且 gpt 内部 proposer/hardener 用不同实例。
+  # 拿到更多家族凭据后应把注入者移回独立家族。
+  hardener:
+    {id: gpt-injector, model: gpt-5.5, protocol: openai, base_url: *gw,
+     api_key_env: SFLAG_KEY, family: gpt}
+
+# 五人面板，三家族，各含强弱档
+solvers:
+  - {id: gpt-strong, model: gpt-5.5, protocol: openai, base_url: *gw,
+     api_key_env: SFLAG_KEY, family: gpt}
+  - {id: gpt-mini, model: gpt-5.4-mini, protocol: openai, base_url: *gw,
+     api_key_env: SFLAG_KEY, family: gpt}
+  # 2026-08-19 扩席。找不到"真正弱"的模型 —— 网关列出的老模型(gpt-5.2/4o)实际
+  # 502/503 不提供服务，可用的全是前沿档。实测这道加难题上只有 gpt-5.4-mini
+  # 答错，其余(含 claude-haiku、effort=none 的各档)全对。既然压不低能力，就
+  # 加席位：分母更大，也更容易撞上某模型正好在边界的题。
+  - {id: gpt-5-4, model: gpt-5.4, protocol: openai, base_url: *gw,
+     api_key_env: SFLAG_KEY, family: gpt}
+  - {id: gpt-spark, model: gpt-5.3-codex-spark, protocol: openai, base_url: *gw,
+     api_key_env: SFLAG_KEY, family: gpt}
+  - {id: ds-pro, model: deepseek-v4-pro, protocol: openai, base_url: *ds,
+     api_key_env: DEEPSEEK_KEY, family: deepseek}
+  - {id: ds-flash, model: deepseek-v4-flash, protocol: openai, base_url: *ds,
+     api_key_env: DEEPSEEK_KEY, family: deepseek}
+  # claude 只给一个席位：CLI 每次约 15 秒且计订阅窗口，多给不划算
+  - {id: claude-weak, model: claude-haiku-4-5, protocol: claude-cli,
+     family: claude}
+  # Kimi 第四家族 —— 【2026-08-19 起两把 key 都 402 "unable to verify your
+  # membership benefits"，会员整体被冻结，账号级问题】。席位先摘掉：留着它，
+  # 第一次面板调用就会触发 QuotaExhausted 把整个 run 干净地停掉。
+  # 会员恢复后取消注释（跑 scripts/preflight.py 确认 200 再上）。
+  # - {id: k3-none, model: k3-256k, protocol: openai, base_url: https://api.kimi.com/coding/v1,
+  #    api_key_env: KIMI_MODERATO, family: kimi, extra_body: {reasoning_effort: none}}
+  # Allegretto 额度恢复后再取消下面注释，补上 Kimi 的强档
+  # - {id: k3-high, model: k3-256k, protocol: openai, base_url: https://api.kimi.com/coding/v1,
+  #    api_key_env: KIMI_ALLEGRETTO, family: kimi, extra_body: {reasoning_effort: high}}
+
+loop:
+  target_max_solve_rate: 0.5
+  # 【实测定为 1】第一轮加难 7 次里 4 次有效；第二轮 5 次里 4 次反向、1 次原地、
+  # 0 次有效，且把第一轮压出的区分度推回全对（0.67->0.71, 0.86->1.00 x2,
+  # 0.71->0.86）。机制：第一轮拿到"全对"的强信号方向明确，第二轮拿到"5/7 对"
+  # 的弱信号，重写整题实质是在均值附近重采样 —— 而均值就是 1.00。
+  max_revisions: 1
+  misinfo_probability: 0.5
+  proposal_retries: 2
+
+  # 注入违反最小编辑时重抽，别扔掉已花掉的干净版面板(~7 次调用)
+  injection_retries: 2
+
+  # 抽两个【不同家族】的验证者，首个异议即拒。deepseek 按量计费很便宜，
+  # 用它换 key_error_lower_bound 这个交付物是划算的
+  validator_consensus: 2
+  cross_family_validation: true
+
+  subtopics_per_domain: 6
+  subtopic_refresh_every: 25
+  subtopic_refresh_size: 6
+  avoid_window: 40
+  avoid_concepts_window: 80
+
+  solve_replicates: 1
+
+  # 题目级并发。实测串行时每对 34-50 分钟，而面板内 7 席本就是并发的 ——
+  # 瓶颈是题与题之间完全串行。5 路并发把 400 对从 11 天压到约 2 晚。
+  # 代价：同批次中的题互相看不到对方的 concepts，avoid 窗口短暂失明。
+  item_workers: 5
+
+  # harden-paired 每对: 出题1 + 验证4 + 面板3x5 + 加难循环(最多2轮 x [1加难+2验证+5面板])
+  # = 约 20 + 16 = 36 次。30 对约 1100 次，留余量。
+  max_api_calls: 1600
+
+generation:
+  # 4 -> 6。这是唯一能在【不滑向冷僻】的前提下真正提高难度的杠杆：4 选项盲猜
+  # 下限 25% 且极易被排除法做掉，6 选项逼迫更细的辨别。注意这改变了盲猜基线，
+  # 与之前 4 选项批次的 solve_rate 不可直接比较。
+  options_count: 6
+  # 20000 是实测值，不是估计。deepseek-v4-pro 写一道 6 选项加难题要 5600+
+  # 思考 token；8000 预算下 complete_json 会加倍重试到 16000 仍然截断，
+  # 加难循环整个失效 —— 而失效方式只有日志里一行 "revision 1 failed"，
+  # harden-paired 会静默退化成普通 paired。对比：gpt-5.5 同任务只要 268 思考 token。
+  max_tokens: 20000
+  solver_max_tokens: 6000

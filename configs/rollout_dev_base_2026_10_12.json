@@ -1,0 +1,23 @@
+{
+  "run_id": "rollout_dev_base_2026_10_12",
+  "server": "http://127.0.0.1:18667",
+  "task_file": "/data/traj_batch/next_batch_2026_10_09_plan/tasks_dev.txt",
+  "split_manifest": "/data/traj_batch/next_batch_2026_10_09_plan/candidates_split.json",
+  "role": "dev",
+  "models": {"qwen3-8b": 5},
+  "difficulty": "level1",
+  "max_steps": 40,
+  "max_tokens_per_turn": 4000,
+  "workers": 4,
+  "max_provider_concurrency": 4,
+  "call_budget": 2500,
+  "max_errors": 10,
+  "out_dir": "/data/traj_batch/rollout_dev_base_2026_10_12/out",
+  "work_dir": "/data/traj_batch/rollout_dev_base_2026_10_12/work",
+  "log_path": "/data/traj_batch/rollout_dev_base_2026_10_12/batch.log",
+  "cybergym_src": "/root/cybergym-src",
+  "cybergym_python": "/data/conda/envs/cybergym-py312/bin/python",
+  "preflight_probes": 3,
+  "unit_attempts": 3,
+  "retry_delay_seconds": 5
+}

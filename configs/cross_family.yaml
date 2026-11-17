@@ -1,0 +1,107 @@
+# 【蓝图配置 —— 未实测】7 家族的理想面板，多数端点仍是 <...> 占位符。
+# 实际在用的是 production.yaml（4 家族、真实端点）。凑齐更多凭据时以本文件为路线图。
+# 跨家族配置：轮换出题 + 跨家族验证 + 跨家族应试面板。
+#
+# 三个目的：
+#   1. 出题者轮换 —— 打破自我偏好泄漏（作者不该是自己题目的唯一裁判）
+#   2. 验证者跨家族 —— 同族验证会因共享盲区虚高 key_agrees
+#   3. 面板跨家族 —— IRT 的 a/θ 与 misinfo 的 dimension test 都需要真实的能力梯度
+#
+# `api:` 是**协议**不是厂商 —— DeepSeek / Qwen / Kimi / GLM / Gemini 都说
+# OpenAI 的 chat-completions 协议，所以共用同一份客户端，区别只在 base_url 和 key。
+# 厂商身份由 family 承载（从模型名推断，可用 family: 显式覆盖），
+# 作者优势 / 注入者交互这些分析按 family 分组。
+#
+# 把下面的 <...> 换成你网关/官方 API 实际的值。两种部署方式：
+#
+#   A. 聚合网关（一个 key、一个 base_url、Anthropic 协议代理所有家族）
+#      -> 全部保持 api: anthropic，只改 model 名，删掉 base_url / api_key_env
+#
+#   B. 各家官方 API
+#      -> 如下所示，逐个填 api / base_url / api_key_env
+#
+# --- 为什么角色一律用强档，而弱模型只出现在 solvers ---
+#
+# 应试面板是**被测群体**，需要能力梯度；出题/验证/注入是**仪器**，仪器必须一致。
+# 强弱混编的验证者 = 闸门松紧随机波动 = 存活下来的题被"抽到谁"非随机筛选。
+# 成本上也没有省的必要：配对模式每题约 37 次调用，其中 33 次是面板，
+# 四个角色调用只占约 1/10。
+#
+# 唯一例外是 proposer 可以偏中档：配对模式下 FRAGIL 的样本量是 n_eligible
+# （干净版答对的题数），题越难弱 solver 的 eligible 越少，恰好让最需要测的
+# 模型样本量最小。中等难度题反而更有统计功效，而且便宜。
+#
+# 常见 OpenAI 兼容端点（自行核对当前值）：
+#   OpenAI     https://api.openai.com/v1
+#   Gemini     https://generativelanguage.googleapis.com/v1beta/openai
+#   DeepSeek   https://api.deepseek.com/v1
+#   Qwen       https://dashscope.aliyuncs.com/compatible-mode/v1
+#   Kimi       https://api.moonshot.cn/v1
+#   GLM        https://open.bigmodel.cn/api/paas/v4
+#
+# 注意：部分较新的 OpenAI 推理模型要求 max_completion_tokens 而非 max_tokens，
+# 那种情况在该条目上加 token_param: max_completion_tokens
+
+provider: anthropic
+
+roles:
+  topic_mapper: claude-opus-4-8
+
+  # 出题者轮换。society.assign() 遍历 (子话题 × 出题者) 叉积，
+  # 保证每个家族均匀覆盖全部子话题——不要改成两个独立取模。
+  proposers:
+    - {id: prop-claude, model: claude-opus-4-8}
+    - {id: prop-gpt,    model: <gpt-model>,      api: openai, base_url: <url>, api_key_env: OPENAI_API_KEY}
+    - {id: prop-gemini, model: <gemini-model>,   api: openai, base_url: <url>, api_key_env: GEMINI_API_KEY}
+    - {id: prop-ds,     model: <deepseek-model>, api: openai, base_url: <url>, api_key_env: DEEPSEEK_API_KEY}
+
+  # 验证者。cross_family_validation: true 时自动避开与作者同族的验证者。
+  # 这里最不该省钱：validator 是效度闸门，混入弱模型会拒掉本该通过的题，
+  # 且拒绝率随抽到谁而变，造成选择偏倚。一律用各家最强档。
+  validators:
+    - {id: val-claude, model: claude-opus-4-8}
+    - {id: val-gpt,    model: <gpt-model>,      api: openai, base_url: <url>, api_key_env: OPENAI_API_KEY}
+    - {id: val-gemini, model: <gemini-model>,   api: openai, base_url: <url>, api_key_env: GEMINI_API_KEY}
+
+  # 注入者也必须轮换：虚假声明带着写它的那个家族的"什么听起来可信"的先验，
+  # 若固定由一家书写，FRAGIL 会混入「注入者家族 × 应试者家族」的交互。
+  # 同样一律用强档：写一句"够可信、但专家能识破、且不破坏唯一正确答案"的假话
+  # 是很难的生成任务，弱模型要么写得太明显（没效果）要么把题写坏（过不了闸）。
+  # 「攻击强度」本身是个值得研究的自变量，但那要单独设臂，不能混进主测量。
+  hardeners:
+    - {id: inj-claude, model: claude-opus-4-8}
+    - {id: inj-gpt,    model: <gpt-model>,      api: openai, base_url: <url>, api_key_env: OPENAI_API_KEY}
+    - {id: inj-gemini, model: <gemini-model>,   api: openai, base_url: <url>, api_key_env: GEMINI_API_KEY}
+
+# 应试面板。dimension test 需要 >= 8 个 solver 才可解读；
+# 论文级 IRT 目标 30+。刻意包含弱模型——没有能力梯度就估不出区分度。
+solvers:
+  - {id: claude-strong, model: claude-opus-4-8}
+  - {id: claude-mid,    model: claude-opus-4-7}
+  - {id: claude-weak,   model: claude-opus-4-6}
+  - {id: gpt-strong,    model: <gpt-model>,        api: openai, base_url: <url>, api_key_env: OPENAI_API_KEY}
+  - {id: gpt-weak,      model: <gpt-mini-model>,   api: openai, base_url: <url>, api_key_env: OPENAI_API_KEY}
+  - {id: gemini-strong, model: <gemini-model>,     api: openai, base_url: <url>, api_key_env: GEMINI_API_KEY}
+  - {id: gemini-weak,   model: <gemini-flash>,     api: openai, base_url: <url>, api_key_env: GEMINI_API_KEY}
+  - {id: deepseek,      model: <deepseek-model>,   api: openai, base_url: <url>, api_key_env: DEEPSEEK_API_KEY}
+  - {id: qwen,          model: <qwen-model>,       api: openai, base_url: <url>, api_key_env: DASHSCOPE_API_KEY}
+  - {id: kimi,          model: <kimi-model>,       api: openai, base_url: <url>, api_key_env: MOONSHOT_API_KEY}
+  - {id: glm,           model: <glm-model>,        api: openai, base_url: <url>, api_key_env: ZHIPUAI_API_KEY}
+
+loop:
+  target_max_solve_rate: 0.5
+  max_revisions: 3
+  misinfo_probability: 0.5
+  proposal_retries: 2
+  subtopics_per_domain: 12
+  pair_control_replicate: true
+  cross_family_validation: true
+  # 双验证者共识：两个不同家族都要独立解出并与答案键一致才放行。
+  # 分歧率 = 答案键错误率下界，是单验证者设计根本产不出的数字。
+  # 成本：每题多约 5%（验证只占总调用的 1/10，且首个不通过即短路）。
+  validator_consensus: 2
+
+generation:
+  options_count: 5
+  max_tokens: 4000
+  solver_max_tokens: 2000

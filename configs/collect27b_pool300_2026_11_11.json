@@ -1,0 +1,22 @@
+{
+  "run_id": "collect27b_pool300_2026_11_11",
+  "server": "http://127.0.0.1:18667",
+  "task_file": "/data/traj_batch/pool300_2026_11_11/tasks_pool300.txt",
+  "split_manifest": "/data/traj_batch/pool300_2026_11_11/split_with_pool300.json",
+  "role": "train",
+  "models": {"local-27b": 2},
+  "difficulty": "level1",
+  "max_steps": 80,
+  "max_tokens_per_turn": 4000,
+  "workers": 3,
+  "max_provider_concurrency": 3,
+  "call_budget": 60000,
+  "max_errors": 3,
+  "out_dir": "/data/traj_batch/pool300_2026_11_11/out_collect27b_pool300_2026_11_11",
+  "work_dir": "/data/traj_batch/pool300_2026_11_11/work_collect27b_pool300_2026_11_11",
+  "log_path": "/data/traj_batch/pool300_2026_11_11/collect27b_pool300_2026_11_11.log",
+  "cybergym_src": "/root/cybergym-src",
+  "cybergym_python": "/data/conda/envs/cybergym-py312/bin/python",
+  "unit_attempts": 3,
+  "retry_delay_seconds": 5
+}

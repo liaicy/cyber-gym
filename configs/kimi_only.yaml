@@ -1,0 +1,140 @@
+# 【已退役 2026-08-19】Kimi 会员冻结 + 单家族被证实测不出任何东西（cov40:
+# 120/120 全对、零方差）。正式配置见 production.yaml。留档是因为头部注释
+# 记录了 Kimi 端点的实测行为（思考 token 预算、effort 静默接受错值等）。
+# 单供应商探路配置 —— 手上只有 Kimi Code 两个 key 时用这个。
+#
+# `protocol: openai` 指的是【说话的格式】，不是厂商。Kimi 的端点接受 OpenAI 那套
+# chat-completions（POST /chat/completions，body 里 model / messages / max_tokens），
+# DeepSeek / Qwen / GLM / Gemini 兼容端点也一样，所以共用同一个 HTTP 客户端。
+# 厂商身份由 family: 承载，那才是泄漏分析分组用的字段。
+#
+# family 必须显式写。`k3-256k` 里没有任何厂商标识，会被推成协议名 openai，而
+# `kimi-for-coding` 会被推成 kimi —— 同一家供应商被拆成两个"家族"，静默失真。
+#
+# ---------------------------------------------------------------------------
+# 两个 key 按档位分工（档位来自官方模型表）：
+#
+#   KIMI_MODERATO    Moderato   1x credit   可调 k3 / k3-256k / kimi-for-coding
+#   KIMI_ALLEGRETTO  Allegretto 5x credit   全部可调，含 highspeed 与 1M 上下文
+#
+# 重活全压 Allegretto —— 它的额度是 Moderato 的 5 倍。Moderato 只跑便宜的档，
+# 顺便让面板的 4 个 solver 分摊到两个账号上，不互相挤限流。
+#
+# 两个取舍：
+#   - 用 k3-256k 不用 k3：题只有几百 token，1M 上下文用不上，官方也写明
+#     256k 版"有效降低消耗"
+#   - 不用 kimi-for-coding-highspeed：6 倍速要 3 倍消耗，批处理不在乎速度
+# ---------------------------------------------------------------------------
+#
+# 面板试图靠两件事拉开能力差距，而不是靠"几个一样的模型"：
+#   1. reasoning_effort: none / low / high / max —— 四档思考深度
+#   2. k3 与 kimi-for-coding 是两代不同的模型
+#
+# ⚠️ 【梯度是假设，不是已知事实】。实测同一道题的思考 token 并不按 effort 排序
+# （low=1161 / high=1799 / max=542 / 默认=3371，且同档次跨次波动 641~2154）。
+# 单点方差太大，看不出档位间有系统差别。
+# 验证方法是免费的：跑完第一批看 `examsociety report` 的逐 solver 通过率。
+#   呈 none < low < high < max  -> 梯度为真，IRT 区分度和 drift 的 carryover 可读
+#   四档通过率接近          -> 梯度是假的，这个配置下 carryover 无意义，别读
+#
+# ⚠️ effort 值写错【不会报错】。文档称未知取值返回 HTTP 400，实测是静默接受
+# （传 "bogus" 返回 200 并照常思考）。所以拼写错误不会被发现，只会让你以为
+# 在跑四档梯度、实际全是同一档。改这些值之后务必用上面那条通过率去核对。
+#
+# ⚠️ 但全是 Moonshot 一家，共享同一套训练先验，所以这些依然无效：
+#   - leakage 的两个检验 —— family 是分组变量，一个家族没有对照
+#   - 双验证者共识的 key_error_lower_bound —— 同厂模型的第二票不是独立意见
+#   - misinfo 的 dimension test —— 需要 ≥8 个跨家族 solver，代码会警告
+#
+# 【能】做的三件事，恰好是最该先问的：
+#   1. coverage —— 领域能榨出多少不重复概念。只依赖出题模型，单家族完全有效
+#   2. response_consistency —— solve_replicates 调到 3，测同一模型答不答得一样
+#   3. drift 的 carryover —— 有了 effort 梯度，4 个 solver 够 ≥3 的门槛
+
+protocol: openai
+
+_url: &url https://api.kimi.com/coding/v1
+_moderato: &m KIMI_MODERATO        # 1x credit
+_allegretto: &a KIMI_ALLEGRETTO    # 5x credit
+_gw: &gw https://yyt.s-flag.com/v1 # s-flag 网关，只有 GPT 家族
+
+roles:
+  # 每轮只调几次，放便宜的账号
+  topic_mapper:
+    {id: k3-mapper, model: k3-256k, protocol: openai, base_url: *url,
+     api_key_env: *m, family: kimi, extra_body: {reasoning_effort: high}}
+  # 出题原本用 max。改成 high 的理由：实测 max 的思考量并不稳定地大于 high
+  # （同一道题 max=542 而 high=1799），却明显更慢更贵。出题→验证是【串行】的，
+  # 这两步的延迟直接决定单题耗时。max 档只保留在面板里当梯度端点。
+  proposer:
+    {id: k3-proposer, model: k3-256k, protocol: openai, base_url: *url,
+     api_key_env: *a, family: kimi, extra_body: {reasoning_effort: high}}
+  # 验证者换成 GPT —— 出题者是 kimi，验证者跨家族之后 key_agrees 第一次
+  # 具有可信度（同族自我验证的盲区被打破）。s-flag 网关实测 /chat/completions
+  # 可用，gpt-5.5 思考量 ~400-850 token，6000 预算充足。
+  validator:
+    {id: gpt-validator, model: gpt-5.5, protocol: openai, base_url: *gw,
+     api_key_env: SFLAG_KEY, family: gpt}
+  hardener:
+    {id: k3-hardener, model: k3-256k, protocol: openai, base_url: *url,
+     api_key_env: *a, family: kimi, extra_body: {reasoning_effort: high}}
+
+# 三个应试者。冒烟后从五个砍到三个，两个理由：
+#   - 去掉 k3-max：它是唯一会把 token 烧爆的（8000 截断 -> 自动加倍到 16000 -> 又截断
+#     -> 记为未作答）。花了最多的钱和时间，却可能连答案都交不上来
+#   - 去掉 k3-low：high 与 low 的差别远不如 high 与 none 的差别锐利。要检验
+#     "effort 是不是真梯度"，留最两端那一对信息量最大
+# 产能探路本来也不需要大面板 —— 它只要题目能落盘。
+solvers:
+  - {id: k3-high, model: k3-256k, protocol: openai, base_url: *url,
+     api_key_env: *a, family: kimi, extra_body: {reasoning_effort: high}}
+  # 关闭思考。实测 0 思考 token / 11 秒 / 159 输出 —— 比 low 便宜一个数量级。
+  - {id: k3-none, model: k3-256k, protocol: openai, base_url: *url,
+     api_key_env: *m, family: kimi, extra_body: {reasoning_effort: none}}
+  # GPT 家族（s-flag 网关）。跨家族 solver 的意义：出题者是 kimi，
+  # kimi 系 solver 答自己家族的题 —— gpt 系是第一个真正的"外人"，
+  # 它们的通过率差是作者优势泄漏的第一个可观测信号。
+  - {id: gpt-strong, model: gpt-5.5, protocol: openai, base_url: *gw,
+     api_key_env: SFLAG_KEY, family: gpt}
+  - {id: gpt-mini, model: gpt-5.4-mini, protocol: openai, base_url: *gw,
+     api_key_env: SFLAG_KEY, family: gpt}
+  # 上一代模型（K2.7 Code），所有会员可用
+  - {id: k27code, model: kimi-for-coding, protocol: openai, base_url: *url,
+     api_key_env: *a, family: kimi}
+
+loop:
+  target_max_solve_rate: 0.5
+  max_revisions: 2
+  misinfo_probability: 0.5
+  proposal_retries: 2
+
+  # 有两个家族了：kimi 出题 + gpt 验证已是跨家族，单验证者即可先跑。
+  # 想要 key_error_lower_bound 时再把 consensus 提到 2（加一个 kimi validator）。
+  validator_consensus: 1
+  cross_family_validation: true
+
+  # 产能探路：池子小起步、频繁扩展，顺便看扩展机制有没有在工作
+  subtopics_per_domain: 6
+  subtopic_refresh_every: 25
+  subtopic_refresh_size: 6
+  avoid_window: 40
+  avoid_concepts_window: 80
+
+  # 产能探路保持 1；一致性探路改成 3（面板调用 ×3）
+  solve_replicates: 1
+
+  # 安全网：超了干净退出，不会把 credit 烧光。
+  # 实测 5 次调用/题（1 出题 + 1 验证 + 3 solver），40 题约 200 次，留 4 倍余量。
+  max_api_calls: 800
+
+generation:
+  options_count: 4
+  # ⚠️ max_tokens 必须同时覆盖【思考 token + 可见回复】，这两个值不能按
+  # "答案有多长"来估。实测 k3-256k @ reasoning_effort=max：
+  #     max_tokens=2000 -> finish_reason=length, 可见内容 0 字, 思考 1997 token
+  #     max_tokens=4000 -> 正常出内容（思考 2154）
+  #     max_tokens=8000 -> 正常（思考 641，同一道题波动极大）
+  # 给小了的后果不是回复变短，是【完全为空】：JSON 解析失败 -> solver 记为
+  # 未作答 -> 面板判 panel_error，一整晚跑下来一条数据都没有。
+  max_tokens: 8000
+  solver_max_tokens: 6000

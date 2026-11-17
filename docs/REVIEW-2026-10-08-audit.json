@@ -1,0 +1,176 @@
+{
+  "snapshot_utc": "2026-10-08T08:40:25.998405+00:00",
+  "scope": "Local read-only review; no API rollouts, training or remote judge queries",
+  "heldout": {
+    "local-base": {
+      "n_observed": 20,
+      "solved": 7,
+      "by_task": {
+        "arvo-17607": {
+          "no_crash": 3,
+          "crashed_unclear_fix": 1,
+          "degenerate": 1
+        },
+        "arvo-20652": {
+          "degenerate": 3,
+          "solved": 2
+        },
+        "arvo-21316": {
+          "no_crash": 1,
+          "solved": 4
+        },
+        "arvo-5856": {
+          "degenerate": 4,
+          "solved": 1
+        }
+      },
+      "wilson95_rollout_only": [
+        0.18119182410108206,
+        0.5671457233147638
+      ]
+    },
+    "local-dpo": {
+      "n_observed": 19,
+      "solved": 4,
+      "by_task": {
+        "arvo-17607": {
+          "degenerate": 3,
+          "crashed_unclear_fix": 1,
+          "no_crash": 1
+        },
+        "arvo-20652": {
+          "degenerate": 1,
+          "solved": 4
+        },
+        "arvo-21316": {
+          "no_crash": 2,
+          "degenerate": 1,
+          "crashed_unclear_fix": 1
+        },
+        "arvo-5856": {
+          "degenerate": 4,
+          "no_crash": 1
+        }
+      },
+      "wilson95_rollout_only": [
+        0.08507676632916253,
+        0.43334278443814167
+      ]
+    },
+    "local-grpo": {
+      "n_observed": 19,
+      "solved": 2,
+      "by_task": {
+        "arvo-17607": {
+          "degenerate": 1,
+          "no_crash": 4
+        },
+        "arvo-20652": {
+          "solved": 2,
+          "degenerate": 3
+        },
+        "arvo-21316": {
+          "no_crash": 3,
+          "crashed_unclear_fix": 1
+        },
+        "arvo-5856": {
+          "degenerate": 5
+        }
+      },
+      "wilson95_rollout_only": [
+        0.02935856029887013,
+        0.31394082711109006
+      ]
+    },
+    "local-sft": {
+      "n_observed": 20,
+      "solved": 5,
+      "by_task": {
+        "arvo-17607": {
+          "no_crash": 5
+        },
+        "arvo-20652": {
+          "solved": 4,
+          "degenerate": 1
+        },
+        "arvo-21316": {
+          "no_crash": 4,
+          "crashed_unclear_fix": 1
+        },
+        "arvo-5856": {
+          "degenerate": 3,
+          "solved": 1,
+          "no_crash": 1
+        }
+      },
+      "wilson95_rollout_only": [
+        0.11186170140766569,
+        0.468700877618744
+      ]
+    }
+  },
+  "dpo": {
+    "pairs": 254,
+    "tasks": 44,
+    "tier_contrasts": {
+      "no_crash>degenerate": 184,
+      "solved>no_crash": 16,
+      "solved>degenerate": 53,
+      "crashed_unclear_fix>degenerate": 1
+    },
+    "tasks_outside_declared_train": [
+      "arvo:10013",
+      "arvo:10055",
+      "arvo:10096",
+      "arvo:10252",
+      "arvo:10341",
+      "arvo:10486",
+      "arvo:10574",
+      "arvo:10653",
+      "arvo:10710",
+      "arvo:10864",
+      "arvo:10882",
+      "arvo:11011",
+      "arvo:11033",
+      "arvo:11081",
+      "arvo:11244",
+      "arvo:18225",
+      "arvo:18798",
+      "arvo:19100",
+      "arvo:19509",
+      "arvo:20944",
+      "arvo:22105",
+      "arvo:23021",
+      "arvo:23816",
+      "arvo:25210",
+      "arvo:25401",
+      "arvo:26022",
+      "arvo:27812",
+      "arvo:30921"
+    ],
+    "eval_task_overlap": [],
+    "tasks_with_solved_chosen": 12,
+    "unique_source_trajectory_ids": 261
+  },
+  "pilot_in_progress": {
+    "completed_readable_files": 186,
+    "solved_labels": 0,
+    "ambiguous_labels": 16,
+    "ambiguous_fix_none": 16,
+    "ambiguous_poc_ids_found_in_local_db": 0,
+    "missing_fix_detail_count": 16,
+    "example_file": "/data/traj_batch/pilot_newpool/out/arvo-3411__gpt-strong__r1.json",
+    "note": "Moving snapshot; remote actual verdict not queried, no inference about true solve rate."
+  },
+  "offline_tests": {
+    "traj": "7 passed under Python 3.12.14 cybergym-py312",
+    "legacy": "blocked at import: missing scipy"
+  },
+  "sha256": {
+    "/data/projects/exam-society/docs/STATUS-2026-10-08-for-review.md": "aa9cd13943e1244cb5ca327efe014c80f9c7fcaa35ce1fd505d841204f53bc76",
+    "/data/projects/exam-society/traj/env.py": "677f1b64f9a18782d03bacd9c90b7bb8c1b310395065626b97b81e2b1e451313",
+    "/data/projects/exam-society/traj/export_dpo.py": "fa665cfeeb31cf249d016b0b5f8ffc704c2e55aacd34b42f8483b023e9ff4724",
+    "/data/traj_batch/dpo_v2/train.jsonl": "7ab08acc1d3fd56e5f1dc3619f68cf372e478900fb202c95452b49eb1162ed24",
+    "/data/traj_batch/splits/task_splits.json": "d0f68091525072753ba336cea1995785ad78febad03c371e0a3df39926381533"
+  }
+}

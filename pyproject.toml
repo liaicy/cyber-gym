@@ -1,0 +1,22 @@
+[project]
+name = "examsociety"
+version = "0.1.0"
+description = "Multi-agent adversarial exam-item generation society with psychometric quality gates"
+requires-python = ">=3.10"
+dependencies = [
+    "anthropic>=0.100",
+    "pydantic>=2",
+    "PyYAML>=6",
+    "numpy>=1.24",
+    "scipy>=1.10",
+]
+
+[project.scripts]
+examsociety = "examsociety.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["examsociety*"]

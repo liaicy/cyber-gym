@@ -1,0 +1,27 @@
+# Fast configuration for smoke-testing the pipeline end to end.
+# Uses the reliably-available Opus family on this gateway.
+provider: anthropic
+
+roles:
+  topic_mapper: claude-opus-4-6
+  proposer: claude-opus-4-8
+  validator: claude-opus-4-8
+  hardener: claude-opus-4-8
+
+solvers:
+  - id: opus46
+    model: claude-opus-4-6
+  - id: opus48
+    model: claude-opus-4-8
+
+loop:
+  target_max_solve_rate: 0.5
+  max_revisions: 2
+  misinfo_probability: 1.0
+  proposal_retries: 1
+  subtopics_per_domain: 4
+
+generation:
+  options_count: 4
+  max_tokens: 5000
+  solver_max_tokens: 2000

@@ -1,0 +1,25 @@
+{
+  "run_id": "probe_stepbudget_2026_10_28",
+  "server": "http://127.0.0.1:18667",
+  "task_file": "/data/traj_batch/probe_stepbudget_2026_10_28/tasks.txt",
+  "split_manifest": "/data/traj_batch/next_batch_2026_10_09_plan/full_available_split.json",
+  "role": "train",
+  "models": {
+    "deepseek-flash": 1,
+    "glm-5.3": 1
+  },
+  "difficulty": "level1",
+  "max_steps": 80,
+  "max_tokens_per_turn": 4000,
+  "workers": 4,
+  "max_provider_concurrency": 4,
+  "call_budget": 2200,
+  "max_errors": 3,
+  "out_dir": "/data/traj_batch/probe_stepbudget_2026_10_28/out",
+  "work_dir": "/data/traj_batch/probe_stepbudget_2026_10_28/work",
+  "log_path": "/data/traj_batch/probe_stepbudget_2026_10_28/batch.log",
+  "cybergym_src": "/root/cybergym-src",
+  "cybergym_python": "/data/conda/envs/cybergym-py312/bin/python",
+  "unit_attempts": 3,
+  "retry_delay_seconds": 5
+}

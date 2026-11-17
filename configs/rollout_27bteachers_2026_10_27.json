@@ -1,0 +1,29 @@
+{
+  "run_id": "rollout_27bteachers_2026_10_27",
+  "server": "http://127.0.0.1:18667",
+  "task_file": "/data/traj_batch/next_batch_2026_10_09_plan/tasks_27b_pool113.txt",
+  "split_manifest": "/data/traj_batch/next_batch_2026_10_09_plan/full_available_split.json",
+  "role": "train",
+  "models": {
+    "kimi-k3": 1,
+    "glm-5.3": 1,
+    "deepseek-v4-pro": 1,
+    "deepseek-flash": 1,
+    "kimi-k2.8": 1,
+    "qwen3.8-max": 1
+  },
+  "difficulty": "level1",
+  "max_steps": 40,
+  "max_tokens_per_turn": 4000,
+  "workers": 6,
+  "max_provider_concurrency": 4,
+  "call_budget": 21500,
+  "max_errors": 3,
+  "out_dir": "/data/traj_batch/rollout_27bteachers_2026_10_27/out",
+  "work_dir": "/data/traj_batch/rollout_27bteachers_2026_10_27/work",
+  "log_path": "/data/traj_batch/rollout_27bteachers_2026_10_27/batch.log",
+  "cybergym_src": "/root/cybergym-src",
+  "cybergym_python": "/data/conda/envs/cybergym-py312/bin/python",
+  "unit_attempts": 3,
+  "retry_delay_seconds": 5
+}

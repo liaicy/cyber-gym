@@ -1,0 +1,28 @@
+# Ablation B1: full adversarial society loop, misinformation probes disabled.
+provider: anthropic
+
+roles:
+  topic_mapper: claude-opus-4-8
+  proposer: claude-opus-4-8
+  validator: claude-opus-4-8
+  hardener: claude-opus-4-8
+
+solvers:
+  - id: opus46
+    model: claude-opus-4-6
+  - id: opus47
+    model: claude-opus-4-7
+  - id: opus48
+    model: claude-opus-4-8
+
+loop:
+  target_max_solve_rate: 0.5
+  max_revisions: 3
+  misinfo_probability: 0.0
+  proposal_retries: 2
+  subtopics_per_domain: 12
+
+generation:
+  options_count: 5
+  max_tokens: 4000
+  solver_max_tokens: 2000

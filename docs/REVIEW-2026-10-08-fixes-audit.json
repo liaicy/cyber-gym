@@ -1,0 +1,76 @@
+{
+  "snapshot_shanghai": "2026-10-08T17:48:00.621875+08:00",
+  "verification_scope": "Local review, mock tests and data reads; no API/judge/training calls",
+  "existing_test_traj": "7/7 passed",
+  "newpool": {
+    "completed_files": 220,
+    "corrected_records": 25,
+    "corrected_solved": 14,
+    "remaining_ambiguous_fix_none": 0,
+    "legacy_unparseable_still_scorable": [
+      {
+        "file": "/data/traj_batch/pilot_newpool/out/arvo-58428__qwen3-8b__r1.json",
+        "tier": "degenerate",
+        "stop_reason": "step_budget",
+        "is_scorable": true
+      },
+      {
+        "file": "/data/traj_batch/pilot_newpool/out/oss-fuzz-42538001__gpt-strong__r1.json",
+        "tier": "degenerate",
+        "stop_reason": "step_budget",
+        "is_scorable": true
+      }
+    ]
+  },
+  "context_cases": {
+    "single_large_observation": {
+      "returned_chars": 16385,
+      "nominal_char_budget": 17700
+    },
+    "pair_sum_only_exceeds_tail": {
+      "returned_chars": 18250,
+      "nominal_char_budget": 17700
+    },
+    "both_large": {
+      "returned_chars": 32320,
+      "nominal_char_budget": 17700
+    }
+  },
+  "infra_tier_with_step_budget_is_scorable": true,
+  "infra_reward": 1.0,
+  "population_std_example": {
+    "rewards": [
+      2.0,
+      2.0,
+      2.0,
+      1.0
+    ],
+    "advantages": [
+      0.5773502691896258,
+      0.5773502691896258,
+      0.5773502691896258,
+      -1.7320508075688774
+    ],
+    "note": "Illustration of group contamination; GPU trainer normalization and masking not inspected."
+  },
+  "timeouts_seconds": {
+    "client_reset": 300,
+    "client_reward": 650,
+    "gen_task_subprocess": 300,
+    "verify_submit_subprocess": 600,
+    "verify_fix_request": 120,
+    "verify_query_request": 30
+  },
+  "source_sha256": {
+    "traj/env.py": "b24d71133060a0c7a5dbebd44c89349596f60d141e610775c9a7ee9457a2831e",
+    "traj/schemas.py": "2a9cb20acc2693c0eb7bd211b83336986f82e6df555fbd7dcee0e2c31053e24b",
+    "traj/agent.py": "d2bc951d42b792242141493b95f4e518df21e121cc262e1637c3a06a6243f8a2",
+    "traj/grpo_env.py": "f6f4b5712ab2ed764ef7c0c5aeead5e99267d47b2dbc99e37bc43e247f05e297",
+    "traj/grpo_env_client.py": "a43726467947cc9bc1ef869408f999cb7abdc848cac9055efdcb2ad4f20caf2a",
+    "traj/export_dpo.py": "0418f7d4ba064e810e01f2589e9c8246b8b402327e7920b800e34d84723cb91f",
+    "traj/export_grpo.py": "dd32727e9bc2c2307480681cc1b199182a8a6a1e1a49c89eb58dd01ba10437f1",
+    "traj/grpo_bridge_server.py": "0c0ebe1934c118549f6a1c7181708d65b2885b8c9b4fe06fc7a9e419b4d1b276",
+    "traj/reverify_ambiguous.py": "cd10f4c7b7803db846881ed88273b1a48815703076662be8adb96d6883b6f5f6",
+    "tests/test_traj.py": "367bb9cf3477feb1fb9c00f854c999b7945e11d28793a456893a52b702542b80"
+  }
+}

@@ -1,0 +1,436 @@
+{
+  "time_utc": "2026-10-08T11:28:26.166724+00:00",
+  "python": "3.12.14",
+  "verification_mode": "local deterministic read-only checks; no network/model/judge/training",
+  "random_seed": null,
+  "seed_note": "No stochastic operations",
+  "source_sha256": {
+    "traj/agent.py": "b823d4bc513c74780ceec3cfbc3b03e106a41adbe43b9154f1bb79975e498b47",
+    "traj/env.py": "348d60e94800e1740645ed4020609d706f4c13ec74f1d65fb36e6bc6cce3ffcc",
+    "traj/schemas.py": "2949dc6bb66560b99c446e4e04939e173c89e3f8774f7f8c7a214d1317d33ad5",
+    "traj/grpo_env.py": "25bab2805a21ea39ce951290f1b84cc1f4987781312781ad96c4e61cffcc6972",
+    "traj/grpo_bridge_server.py": "514d22b12eea6f421659bc28e65387017e62bcdfe3a0feff4796ddb6eca1dcbb",
+    "traj/grpo_env_client.py": "d5a8aa1e4714a6264f37ddea579c5be45d49ec9b2439524b8d0adbd1eef61f68",
+    "traj/migrate_infra_labels.py": "685a64d99ed8e4b4d48b6ef8d9b6ec67a340b84cfe201f8eaac91494147023f2",
+    "gpu_trainer_backup/scripts/sft_lora.py": "c73ff099afbb2a8f70b8db4367fc144cb228e687247064432ff203594d3539c1",
+    "gpu_trainer_backup/scripts/dpo_lora.py": "912c54b41c21d629e7310448d680c52d57917a9d9faf80ec357b62a0aafc4cc9",
+    "gpu_trainer_backup/scripts/grpo_train_v1.py": "1e59afc53637cbe724221c7a0d8351552fb6becfd7ab6ebe86ae1099d86e26a5",
+    "gpu_trainer_backup/scripts/grpo_env_client.py": "d5a8aa1e4714a6264f37ddea579c5be45d49ec9b2439524b8d0adbd1eef61f68",
+    "docs/review_checks_2026_10_08_round3.py": "87fb25bf1b8bb4e689f187f2c1680eb8b68c01d6750f6c62964dd7a961f405de"
+  },
+  "context_config_chars": {
+    "head_cap": 1500,
+    "tail": 16000,
+    "fast_path_threshold": 17700
+  },
+  "context_cases": {
+    "original_8000_plus_10000": {
+      "outputs": {
+        "rollout": {
+          "total_chars": 16239,
+          "tail_chars": 15989,
+          "message_chars": [
+            100,
+            150,
+            7106,
+            8883
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        },
+        "sft_backup": {
+          "total_chars": 16239,
+          "tail_chars": 15989,
+          "message_chars": [
+            100,
+            150,
+            7106,
+            8883
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        },
+        "dpo_backup": {
+          "total_chars": 16239,
+          "tail_chars": 15989,
+          "message_chars": [
+            100,
+            150,
+            7106,
+            8883
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        }
+      },
+      "three_copies_identical": true
+    },
+    "original_20000_plus_20000": {
+      "outputs": {
+        "rollout": {
+          "total_chars": 16240,
+          "tail_chars": 15990,
+          "message_chars": [
+            100,
+            150,
+            7995,
+            7995
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        },
+        "sft_backup": {
+          "total_chars": 16240,
+          "tail_chars": 15990,
+          "message_chars": [
+            100,
+            150,
+            7995,
+            7995
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        },
+        "dpo_backup": {
+          "total_chars": 16240,
+          "tail_chars": 15990,
+          "message_chars": [
+            100,
+            150,
+            7995,
+            7995
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        }
+      },
+      "three_copies_identical": true
+    },
+    "single_50000_observation": {
+      "outputs": {
+        "rollout": {
+          "total_chars": 16313,
+          "tail_chars": 16063,
+          "message_chars": [
+            100,
+            150,
+            100,
+            15963
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        },
+        "sft_backup": {
+          "total_chars": 16313,
+          "tail_chars": 16063,
+          "message_chars": [
+            100,
+            150,
+            100,
+            15963
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        },
+        "dpo_backup": {
+          "total_chars": 16313,
+          "tail_chars": 16063,
+          "message_chars": [
+            100,
+            150,
+            100,
+            15963
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        }
+      },
+      "three_copies_identical": true
+    },
+    "task_50000": {
+      "outputs": {
+        "rollout": {
+          "total_chars": 1882,
+          "tail_chars": 200,
+          "message_chars": [
+            100,
+            1582,
+            100,
+            100
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        },
+        "sft_backup": {
+          "total_chars": 1882,
+          "tail_chars": 200,
+          "message_chars": [
+            100,
+            1582,
+            100,
+            100
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        },
+        "dpo_backup": {
+          "total_chars": 1882,
+          "tail_chars": 200,
+          "message_chars": [
+            100,
+            1582,
+            100,
+            100
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        }
+      },
+      "three_copies_identical": true
+    },
+    "head_plus_full_tail": {
+      "outputs": {
+        "rollout": {
+          "total_chars": 18639,
+          "tail_chars": 15989,
+          "message_chars": [
+            1100,
+            1550,
+            7106,
+            8883
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        },
+        "sft_backup": {
+          "total_chars": 18639,
+          "tail_chars": 15989,
+          "message_chars": [
+            1100,
+            1550,
+            7106,
+            8883
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        },
+        "dpo_backup": {
+          "total_chars": 18639,
+          "tail_chars": 15989,
+          "message_chars": [
+            1100,
+            1550,
+            7106,
+            8883
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        }
+      },
+      "three_copies_identical": true
+    },
+    "uneven_pair": {
+      "outputs": {
+        "rollout": {
+          "total_chars": 18796,
+          "tail_chars": 16146,
+          "message_chars": [
+            1100,
+            1550,
+            180,
+            15966
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        },
+        "sft_backup": {
+          "total_chars": 18796,
+          "tail_chars": 16146,
+          "message_chars": [
+            1100,
+            1550,
+            180,
+            15966
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        },
+        "dpo_backup": {
+          "total_chars": 18796,
+          "tail_chars": 16146,
+          "message_chars": [
+            1100,
+            1550,
+            180,
+            15966
+          ],
+          "roles": [
+            "system",
+            "user",
+            "assistant",
+            "user"
+          ]
+        }
+      },
+      "three_copies_identical": true
+    }
+  },
+  "dpo_data": {
+    "path": "/data/traj_batch/dpo_v2/train.jsonl",
+    "sha256": "7ab08acc1d3fd56e5f1dc3619f68cf372e478900fb202c95452b49eb1162ed24",
+    "counts_with_current_backup_fit": {
+      "rows": 254,
+      "chosen_clipped": 142,
+      "chosen_starts_user": 142,
+      "chosen_empty_continuation": 0,
+      "chosen_over_17700_chars": 0,
+      "rejected_clipped": 173,
+      "rejected_starts_user": 173,
+      "rejected_empty_continuation": 0,
+      "rejected_over_17700_chars": 0,
+      "unequal_prompt_pairs": 97
+    },
+    "prompt_mismatch_examples": [
+      {
+        "line": 2,
+        "task": "arvo:10013",
+        "chosen_head_chars": [
+          1179,
+          179
+        ],
+        "rejected_head_chars": [
+          1179,
+          129
+        ]
+      },
+      {
+        "line": 4,
+        "task": "arvo:10013",
+        "chosen_head_chars": [
+          1179,
+          179
+        ],
+        "rejected_head_chars": [
+          1179,
+          129
+        ]
+      },
+      {
+        "line": 6,
+        "task": "arvo:10013",
+        "chosen_head_chars": [
+          1179,
+          179
+        ],
+        "rejected_head_chars": [
+          1179,
+          129
+        ]
+      },
+      {
+        "line": 11,
+        "task": "arvo:10055",
+        "chosen_head_chars": [
+          1179,
+          125
+        ],
+        "rejected_head_chars": [
+          1179,
+          175
+        ]
+      },
+      {
+        "line": 14,
+        "task": "arvo:10096",
+        "chosen_head_chars": [
+          1179,
+          103
+        ],
+        "rejected_head_chars": [
+          1179,
+          153
+        ]
+      }
+    ],
+    "scope": "Current preparation functions on existing JSONL; not historical GPU tensors or checkpoint attribution"
+  },
+  "toy_template_counterexample": {
+    "template": "Synthetic ToyTokenizer only; NOT Qwen",
+    "fitted_roles": [
+      "system",
+      "user",
+      "user",
+      "assistant"
+    ],
+    "full_has_prompt_prefix": false,
+    "completion_start": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+  }
+}

@@ -1,0 +1,93 @@
+# 【已被 production.yaml 取代 2026-08-19】三家族过渡配置，保留作历史参照。
+# 三家族配置（kimi + gpt + claude）—— 明天的 30 对用这个。
+#
+# 相比 kimi_only.yaml 的两处升级：
+#   1. claude-haiku-4-5 进面板 —— 第三个家族，而且是【真正的弱模型】。
+#      面板至今 30+ 次作答全对、零方差；haiku 是第一个有望打破僵局的成员
+#   2. 双验证者共识可以开了（gpt + kimi 两家独立验证，key_error_lower_bound
+#      第一次有意义）。默认仍设 1，想开把 validator_consensus 改成 2
+#
+# ── 启动前必须（跑批的终端里）──────────────────────────────────────────
+#   $env:KIMI_MODERATO   = "sk-kimi-..."      # Moderato 档
+#   $env:KIMI_ALLEGRETTO = "sk-kimi-..."      # Allegretto 档
+#   $env:SFLAG_KEY       = "sk-eff7..."       # s-flag 网关（GPT）
+#   （claude 现走 CLI 本机凭据，不再需要 ANTHROPIC_AUTH_TOKEN）
+#   $env:HTTPS_PROXY = "http://127.0.0.1:10080"      # Anthropic 直连不通
+#   $env:HTTP_PROXY  = "http://127.0.0.1:10080"
+#   $env:NO_PROXY    = "api.kimi.com,yyt.s-flag.com" # 国内端点不走代理
+#
+# 说明：
+#   - claude 走 claude-cli 协议（本机凭据），全系模型可用；当前只给 haiku
+#     一个席位以控制订阅窗口消耗
+#     （模型级限制，非频率），haiku 稳定可用。将来通了再加强档
+#   - NO_PROXY 必须设：全局代理会把 Kimi/网关流量也拽进代理，徒增故障面
+
+protocol: openai
+
+_url: &url https://api.kimi.com/coding/v1
+_gw: &gw https://yyt.s-flag.com/v1
+_moderato: &m KIMI_MODERATO
+_allegretto: &a KIMI_ALLEGRETTO
+
+roles:
+  topic_mapper:
+    {id: k3-mapper, model: k3-256k, protocol: openai, base_url: *url,
+     api_key_env: *m, family: kimi, extra_body: {reasoning_effort: high}}
+  proposer:
+    {id: k3-proposer, model: k3-256k, protocol: openai, base_url: *url,
+     api_key_env: *a, family: kimi, extra_body: {reasoning_effort: high}}
+  # 跨家族验证：出题 kimi，验证 gpt。想开双验证者共识时在此列表加回一个
+  # kimi 验证者并把 loop.validator_consensus 改成 2
+  validator:
+    {id: gpt-validator, model: gpt-5.5, protocol: openai, base_url: *gw,
+     api_key_env: SFLAG_KEY, family: gpt}
+  hardener:
+    {id: k3-hardener, model: k3-256k, protocol: openai, base_url: *url,
+     api_key_env: *a, family: kimi, extra_body: {reasoning_effort: high}}
+
+# 六人面板，三家族。
+solvers:
+  - {id: k3-high, model: k3-256k, protocol: openai, base_url: *url,
+     api_key_env: *a, family: kimi, extra_body: {reasoning_effort: high}}
+  - {id: k3-none, model: k3-256k, protocol: openai, base_url: *url,
+     api_key_env: *m, family: kimi, extra_body: {reasoning_effort: none}}
+  - {id: gpt-strong, model: gpt-5.5, protocol: openai, base_url: *gw,
+     api_key_env: SFLAG_KEY, family: gpt}
+  - {id: gpt-mini, model: gpt-5.4-mini, protocol: openai, base_url: *gw,
+     api_key_env: SFLAG_KEY, family: gpt}
+  # 第三家族，走本机 Claude Code CLI 无头模式（claude -p）。
+  # 订阅 OAuth token 在直连 API 上被门禁到只剩 haiku（全模型扫描证实），
+  # 而官方 CLI 无头模式整条产品线放行——它是文档支持的自动化路径，凭据在
+  # 本机存储，不经过任何环境变量。代价：每次调用 ~5s 进程启动 + CLI 自身
+  # ~35k 缓存上下文计入订阅窗口，所以只给少量席位，别用于高频角色。
+  # 注意 base_url 在此协议下是【CLI 可执行文件路径】，扩展升级后要跟着改。
+  - {id: claude-weak, model: claude-haiku-4-5, protocol: claude-cli, family: claude,
+     base_url: "C:/Users/localmgr/.vscode/extensions/anthropic.claude-code-2.1.234-win32-x64/resources/native-binary/claude.exe"}
+  - {id: k27code, model: kimi-for-coding, protocol: openai, base_url: *url,
+     api_key_env: *a, family: kimi}
+
+loop:
+  target_max_solve_rate: 0.5
+  max_revisions: 2
+  misinfo_probability: 0.5
+  proposal_retries: 2
+
+  validator_consensus: 1
+  cross_family_validation: true
+
+  subtopics_per_domain: 6
+  subtopic_refresh_every: 25
+  subtopic_refresh_size: 6
+  avoid_window: 40
+  avoid_concepts_window: 80
+
+  solve_replicates: 1
+
+  # 30 对 x (13 + 3 claude) 约 500 次，留余量
+  max_api_calls: 1200
+
+generation:
+  options_count: 4
+  # k3 思考爆预算的教训：max 档实测能吃 16000+；角色都用 high 后 8000 够
+  max_tokens: 8000
+  solver_max_tokens: 6000

@@ -1,0 +1,20 @@
+{
+  "run_id": "rollout_smoke_2026_10_09",
+  "server": "http://127.0.0.1:18667",
+  "task_file": "/data/traj_batch/next_batch_2026_10_09_plan/tasks_smoke.txt",
+  "split_manifest": "/data/traj_batch/next_batch_2026_10_09_plan/candidates_split.json",
+  "role": "train",
+  "models": {"qwen3-8b": 1, "qwen14b": 1, "kimi-k3": 1, "glm-5.3": 1, "deepseek-v4-pro": 1, "deepseek-flash": 1, "kimi-k2.8": 1, "qwen3.8-max": 1},
+  "difficulty": "level1",
+  "max_steps": 40,
+  "max_tokens_per_turn": 4000,
+  "workers": 8,
+  "max_provider_concurrency": 4,
+  "call_budget": 700,
+  "max_errors": 1,
+  "out_dir": "/data/traj_batch/rollout_smoke_2026_10_09/out",
+  "work_dir": "/data/traj_batch/rollout_smoke_2026_10_09/work",
+  "log_path": "/data/traj_batch/rollout_smoke_2026_10_09/batch.log",
+  "cybergym_src": "/root/cybergym-src",
+  "cybergym_python": "/data/conda/envs/cybergym-py312/bin/python"
+}

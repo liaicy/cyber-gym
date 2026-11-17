@@ -1,0 +1,22 @@
+{
+  "run_id": "collectteachers_pool300_2026_11_11",
+  "server": "http://127.0.0.1:18667",
+  "task_file": "/data/traj_batch/pool300_2026_11_11/tasks_pool300.txt",
+  "split_manifest": "/data/traj_batch/pool300_2026_11_11/split_with_pool300.json",
+  "role": "train",
+  "models": {"glm-5.3": 1, "deepseek-flash": 1, "deepseek-v4-pro": 1, "kimi-k3": 1, "kimi-k2.8": 1},
+  "difficulty": "level1",
+  "max_steps": 80,
+  "max_tokens_per_turn": 4000,
+  "workers": 6,
+  "max_provider_concurrency": 4,
+  "call_budget": 150000,
+  "max_errors": 3,
+  "out_dir": "/data/traj_batch/pool300_2026_11_11/out_collectteachers_pool300_2026_11_11",
+  "work_dir": "/data/traj_batch/pool300_2026_11_11/work_collectteachers_pool300_2026_11_11",
+  "log_path": "/data/traj_batch/pool300_2026_11_11/collectteachers_pool300_2026_11_11.log",
+  "cybergym_src": "/root/cybergym-src",
+  "cybergym_python": "/data/conda/envs/cybergym-py312/bin/python",
+  "unit_attempts": 3,
+  "retry_delay_seconds": 5
+}

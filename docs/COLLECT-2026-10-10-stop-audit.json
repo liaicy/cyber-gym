@@ -1,0 +1,176 @@
+{
+  "audited_at_utc": "2026-10-10T06:25:32.434791+00:00",
+  "status": "stopped_early_not_completed",
+  "exit_code": 2,
+  "stop_cause": "max_errors=3 reached; in-flight units drained",
+  "timeline_shanghai": [
+    {
+      "time": "2026-10-09 17:49:12",
+      "unit": "arvo:1268/glm-5.3/r1",
+      "error": "UnicodeDecodeError",
+      "cumulative_errors": 1
+    },
+    {
+      "time": "2026-10-09 18:07:55",
+      "unit": "arvo:19757/qwen14b/r1",
+      "error": "UnicodeDecodeError",
+      "cumulative_errors": 2
+    },
+    {
+      "time": "2026-10-09 18:09:18",
+      "unit": "arvo:18756/kimi-k2.8/r1",
+      "error": "empty response (stop=ok)",
+      "cumulative_errors": 3,
+      "action": "stop scheduling new units"
+    },
+    {
+      "time": "2026-10-09 18:10:54",
+      "unit": "arvo:19757/glm-5.3/r1",
+      "error": "UnicodeDecodeError",
+      "cumulative_errors": 4
+    },
+    {
+      "time": "2026-10-09 18:29:03",
+      "action": "write summary and exit 2"
+    }
+  ],
+  "result_snapshot": {
+    "run_id": "rollout_train_2026_10_09",
+    "time_utc": "2026-10-09T10:29:03.188267+00:00",
+    "planned_units": 410,
+    "expected_units": 369,
+    "skipped_preflight_units": 41,
+    "preflight_disabled": {
+      "deepseek-v4-pro": "HTTP 400 url error, please check url！ For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#error-url"
+    },
+    "recorded_units": 56,
+    "missing_units": 313,
+    "reserved_attempts": 1628,
+    "call_budget": 18000,
+    "scorable": 55,
+    "expected_scorable": 55,
+    "tiers": {
+      "no_crash": 20,
+      "degenerate": 32,
+      "crashed_unclear_fix": 1,
+      "solved": 3
+    },
+    "models": {
+      "qwen3-8b": 19,
+      "qwen14b": 6,
+      "kimi-k3": 7,
+      "glm-5.3": 5,
+      "deepseek-flash": 7,
+      "kimi-k2.8": 6,
+      "qwen3.8-max": 6
+    },
+    "judge_coverage": {
+      "vul_verdict_records": 24,
+      "vul_crash_records": 4,
+      "fix_result_records": 4
+    },
+    "per_model": {
+      "qwen3-8b": {
+        "recorded": 19,
+        "scorable": 19,
+        "solved": 2,
+        "preflight_down": false
+      },
+      "qwen14b": {
+        "recorded": 6,
+        "scorable": 6,
+        "solved": 0,
+        "preflight_down": false
+      },
+      "kimi-k3": {
+        "recorded": 7,
+        "scorable": 7,
+        "solved": 0,
+        "preflight_down": false
+      },
+      "glm-5.3": {
+        "recorded": 5,
+        "scorable": 5,
+        "solved": 0,
+        "preflight_down": false
+      },
+      "deepseek-v4-pro": {
+        "recorded": 0,
+        "scorable": 0,
+        "solved": 0,
+        "preflight_down": true
+      },
+      "deepseek-flash": {
+        "recorded": 7,
+        "scorable": 7,
+        "solved": 1,
+        "preflight_down": false
+      },
+      "kimi-k2.8": {
+        "recorded": 6,
+        "scorable": 5,
+        "solved": 0,
+        "preflight_down": false
+      },
+      "qwen3.8-max": {
+        "recorded": 6,
+        "scorable": 6,
+        "solved": 0,
+        "preflight_down": false
+      }
+    },
+    "errors_this_invocation": 4
+  },
+  "encoding_diagnosis": {
+    "confirmed_local_reproduction": "real CyberGymEnv.step(grep) with non-UTF-8 source byte raises UnicodeDecodeError at env.py _grep subprocess text=True",
+    "other_unprotected_strict_decode_paths": [
+      "CyberGymEnv.verify subprocess",
+      "batch_rollout.gen_task subprocess"
+    ],
+    "historical_traceback_available": false,
+    "historical_throw_site_not_proven": true
+  },
+  "disconnect_diagnosis": {
+    "direct_stop_trigger_confirmed": "application error threshold",
+    "independent_detached_collector_and_tunnel_verified_at_startup": true,
+    "judge_fix_results_during_run": 4,
+    "judge_solved_after_stop_scheduling": true,
+    "historical_no_short_tunnel_outage_claimed": false,
+    "tunnel_reconnection_observed_later_than_job_end": true
+  },
+  "actions_this_review": {
+    "collector_restarted": false,
+    "model_or_judge_requests": 0,
+    "source_or_config_modified": false
+  },
+  "evidence_files": {
+    "console.log": {
+      "path": "/data/traj_batch/rollout_train_2026_10_09/console.log",
+      "sha256": "0aa088771b81c4f304395fb8271b84b5c4651bfb3fb11d3f4085e9ee0edbab28"
+    },
+    "batch.log": {
+      "path": "/data/traj_batch/rollout_train_2026_10_09/batch.log",
+      "sha256": "68b230f39dae4956508610e63cfd0572cafa1925290dd33ac522f8eeebf37c49"
+    },
+    "out/summary.json": {
+      "path": "/data/traj_batch/rollout_train_2026_10_09/out/summary.json",
+      "sha256": "3889bbee74ca82a1c73ec358a3a248041f9c858b83c197c470fb16e46bb19d86"
+    },
+    "out/attempt_ledger.json": {
+      "path": "/data/traj_batch/rollout_train_2026_10_09/out/attempt_ledger.json",
+      "sha256": "14c7b6513855ef4c282a90119bcb37442990510b5bac204a0e58a577fd310087"
+    },
+    "exit_code": {
+      "path": "/data/traj_batch/rollout_train_2026_10_09/exit_code",
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+    },
+    "finished_at_utc": {
+      "path": "/data/traj_batch/rollout_train_2026_10_09/finished_at_utc",
+      "sha256": "95fb7dd35333dfce15039d334ee834a1339a51305de37384b4f8aa5431da7b2a"
+    },
+    "out/run_manifest.json": {
+      "path": "/data/traj_batch/rollout_train_2026_10_09/out/run_manifest.json",
+      "sha256": "5f73d2c14b741af4f2388d0b434b704618d7ad4e9838a3a2655ebede928d0e19"
+    }
+  }
+}

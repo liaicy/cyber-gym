@@ -1,0 +1,271 @@
+{
+  "created_at_utc": "2026-10-09T07:18:57.382986+00:00",
+  "scope": "prepare rollout collection; no paid/model/verifier execution",
+  "runs": [
+    {
+      "config_file": "/data/projects/exam-society/configs/rollout_smoke_2026_10_09.json",
+      "fingerprint": "a8c5d03ee79986f9b106524425ecbcfc7a2d89abcca0c9dbc0544c36c2f73032",
+      "effective_config": {
+        "run_id": "rollout_smoke_2026_10_09",
+        "server": "http://127.0.0.1:18667",
+        "task_file": "/data/traj_batch/next_batch_2026_10_09_plan/tasks_smoke.txt",
+        "split_manifest": "/data/traj_batch/next_batch_2026_10_09_plan/candidates_split.json",
+        "role": "train",
+        "models": {
+          "qwen3-8b": 1,
+          "glm-5.3": 1,
+          "deepseek-flash": 1
+        },
+        "difficulty": "level1",
+        "max_steps": 40,
+        "max_tokens_per_turn": 4000,
+        "workers": 2,
+        "max_provider_concurrency": 1,
+        "call_budget": 300,
+        "max_errors": 1,
+        "out_dir": "/data/traj_batch/rollout_smoke_2026_10_09/out",
+        "work_dir": "/data/traj_batch/rollout_smoke_2026_10_09/work",
+        "log_path": "/data/traj_batch/rollout_smoke_2026_10_09/batch.log",
+        "cybergym_src": "/root/cybergym-src",
+        "cybergym_python": "/data/conda/envs/cybergym-py312/bin/python3.12",
+        "task_ids": [
+          "arvo:11945",
+          "arvo:12096"
+        ],
+        "model_specs": [
+          {
+            "ref": {
+              "id": "qwen3-8b",
+              "model": "Qwen/Qwen3-8B",
+              "api": "openai",
+              "base_url": "https://api.siliconflow.cn/v1",
+              "api_key_env": "SF_KEY",
+              "token_param": "max_tokens",
+              "family": "qwen",
+              "extra_body": {
+                "enable_thinking": false
+              }
+            },
+            "replicates": 1
+          },
+          {
+            "ref": {
+              "id": "glm-5.3",
+              "model": "glm-5.3",
+              "api": "openai",
+              "base_url": "https://yyt.s-flag.com/v1",
+              "api_key_env": "SFLAG_KEY",
+              "token_param": "max_tokens",
+              "family": "glm",
+              "extra_body": {
+                "thinking": {
+                  "type": "disabled"
+                }
+              }
+            },
+            "replicates": 1
+          },
+          {
+            "ref": {
+              "id": "deepseek-flash",
+              "model": "deepseek-v4.1-flash",
+              "api": "openai",
+              "base_url": "https://yyt.s-flag.com/v1",
+              "api_key_env": "SFLAG_KEY",
+              "token_param": "max_tokens",
+              "family": "deepseek",
+              "extra_body": {
+                "thinking": {
+                  "type": "disabled"
+                }
+              }
+            },
+            "replicates": 1
+          }
+        ],
+        "task_file_sha256": "1e17906470fd8eb772112e8be477d8ae5305b37ce6f845530dfc2e252aee3867",
+        "split_manifest_sha256": "1ed725f2d042352c3b8cd06d30f08791cfbfef44907d7c2fe9af7481eca6075a",
+        "source_sha256": {
+          "traj/collect_batch.py": "0029ad94e8e29b7c0e1f586702240b4ba8764e1c5dbc7fac6cd6845d20d230ec",
+          "traj/batch_rollout.py": "74950ad8e84b4f3b2d1490b1ac9ff4b69f534cbcedecc53289cfabdd8d5d0044",
+          "traj/agent.py": "df454e9123c86419edeba56544fe2299f99bff1c9117dcbad80d16f798a5037a",
+          "traj/chat.py": "ff26f2b66c5e2cb8c2e85ef761efa7d79ffcdccc1f5887b375f51b6cb990bbcb",
+          "traj/env.py": "5f224ac04a90086680a0fc35c9c28125370e2983cb21d941b7407b875bce3e85",
+          "traj/schemas.py": "a5c8b7dff72e59043130eb3da762acf317b0c992311a53ffe6cca9de81c8daa3",
+          "examsociety/llm.py": "c0bd62d2d26b206c98628f4759df732dfe5db3d300d4a80072a39a39d7f484e7"
+        },
+        "seed_note": "API sampling seed is unset unless present in model extra_body",
+        "split_status": "candidate_not_activated"
+      },
+      "planned_units": 6,
+      "dry_run_exit_code": 0,
+      "output_directory_exists_at_audit": false
+    },
+    {
+      "config_file": "/data/projects/exam-society/configs/rollout_train_2026_10_09.json",
+      "fingerprint": "c300c2669d0d35857f7c158bb1e69f458bc9c8dfb5e15bec0069f4c6684ce981",
+      "effective_config": {
+        "run_id": "rollout_train_2026_10_09",
+        "server": "http://127.0.0.1:18667",
+        "task_file": "/data/traj_batch/next_batch_2026_10_09_plan/tasks_train.txt",
+        "split_manifest": "/data/traj_batch/next_batch_2026_10_09_plan/candidates_split.json",
+        "role": "train",
+        "models": {
+          "qwen3-8b": 3,
+          "glm-5.3": 1,
+          "deepseek-flash": 1
+        },
+        "difficulty": "level1",
+        "max_steps": 40,
+        "max_tokens_per_turn": 4000,
+        "workers": 2,
+        "max_provider_concurrency": 1,
+        "call_budget": 10000,
+        "max_errors": 3,
+        "out_dir": "/data/traj_batch/rollout_train_2026_10_09/out",
+        "work_dir": "/data/traj_batch/rollout_train_2026_10_09/work",
+        "log_path": "/data/traj_batch/rollout_train_2026_10_09/batch.log",
+        "cybergym_src": "/root/cybergym-src",
+        "cybergym_python": "/data/conda/envs/cybergym-py312/bin/python3.12",
+        "task_ids": [
+          "arvo:11945",
+          "arvo:12096",
+          "arvo:1268",
+          "arvo:13160",
+          "arvo:17305",
+          "arvo:18756",
+          "arvo:19757",
+          "arvo:22295",
+          "arvo:24099",
+          "arvo:2623",
+          "arvo:26325",
+          "arvo:28477",
+          "arvo:29974",
+          "arvo:31961",
+          "arvo:3732",
+          "arvo:41356",
+          "arvo:43307",
+          "arvo:43365",
+          "arvo:44008",
+          "arvo:46541",
+          "arvo:48020",
+          "arvo:49801",
+          "arvo:49903",
+          "arvo:50901",
+          "arvo:51224",
+          "arvo:53080",
+          "arvo:53158",
+          "arvo:54811",
+          "arvo:59390",
+          "arvo:62547",
+          "arvo:63057",
+          "arvo:63537",
+          "arvo:8933",
+          "arvo:8968",
+          "oss-fuzz:370131946",
+          "oss-fuzz:42535696",
+          "oss-fuzz:42536112",
+          "oss-fuzz:42537601",
+          "oss-fuzz:42537629",
+          "oss-fuzz:42537683",
+          "oss-fuzz:42537879"
+        ],
+        "model_specs": [
+          {
+            "ref": {
+              "id": "qwen3-8b",
+              "model": "Qwen/Qwen3-8B",
+              "api": "openai",
+              "base_url": "https://api.siliconflow.cn/v1",
+              "api_key_env": "SF_KEY",
+              "token_param": "max_tokens",
+              "family": "qwen",
+              "extra_body": {
+                "enable_thinking": false
+              }
+            },
+            "replicates": 3
+          },
+          {
+            "ref": {
+              "id": "glm-5.3",
+              "model": "glm-5.3",
+              "api": "openai",
+              "base_url": "https://yyt.s-flag.com/v1",
+              "api_key_env": "SFLAG_KEY",
+              "token_param": "max_tokens",
+              "family": "glm",
+              "extra_body": {
+                "thinking": {
+                  "type": "disabled"
+                }
+              }
+            },
+            "replicates": 1
+          },
+          {
+            "ref": {
+              "id": "deepseek-flash",
+              "model": "deepseek-v4.1-flash",
+              "api": "openai",
+              "base_url": "https://yyt.s-flag.com/v1",
+              "api_key_env": "SFLAG_KEY",
+              "token_param": "max_tokens",
+              "family": "deepseek",
+              "extra_body": {
+                "thinking": {
+                  "type": "disabled"
+                }
+              }
+            },
+            "replicates": 1
+          }
+        ],
+        "task_file_sha256": "07979cb4e31f3f80ac7104ea1612402a47656cbace5b22ce6c1496fed98dbe17",
+        "split_manifest_sha256": "1ed725f2d042352c3b8cd06d30f08791cfbfef44907d7c2fe9af7481eca6075a",
+        "source_sha256": {
+          "traj/collect_batch.py": "0029ad94e8e29b7c0e1f586702240b4ba8764e1c5dbc7fac6cd6845d20d230ec",
+          "traj/batch_rollout.py": "74950ad8e84b4f3b2d1490b1ac9ff4b69f534cbcedecc53289cfabdd8d5d0044",
+          "traj/agent.py": "df454e9123c86419edeba56544fe2299f99bff1c9117dcbad80d16f798a5037a",
+          "traj/chat.py": "ff26f2b66c5e2cb8c2e85ef761efa7d79ffcdccc1f5887b375f51b6cb990bbcb",
+          "traj/env.py": "5f224ac04a90086680a0fc35c9c28125370e2983cb21d941b7407b875bce3e85",
+          "traj/schemas.py": "a5c8b7dff72e59043130eb3da762acf317b0c992311a53ffe6cca9de81c8daa3",
+          "examsociety/llm.py": "c0bd62d2d26b206c98628f4759df732dfe5db3d300d4a80072a39a39d7f484e7"
+        },
+        "seed_note": "API sampling seed is unset unless present in model extra_body",
+        "split_status": "candidate_not_activated"
+      },
+      "planned_units": 205,
+      "dry_run_exit_code": 0,
+      "output_directory_exists_at_audit": false
+    }
+  ],
+  "validation": {
+    "pytest_command": "/data/conda/envs/cybergym-py312/bin/python -m pytest tests/test_traj.py tests/test_context_window.py tests/test_verdict_contract.py tests/test_prepare_next_batch.py tests/test_collect_batch.py -q",
+    "passed_tests": 62,
+    "passed_subtests": 59,
+    "all_verifier_and_model_calls_mocked": true,
+    "dry_run_network_calls": 0,
+    "provenance_files_checked": 234,
+    "original_hash_mismatches": [],
+    "read_only_judge_schema_probe": {
+      "url": "http://127.0.0.1:18667/openapi.json",
+      "http_status": 200,
+      "required_routes_present": [
+        "/submit-vul",
+        "/query-poc",
+        "/verify-agent-pocs"
+      ],
+      "does_not_verify_auth_or_execution": true
+    }
+  },
+  "limitations": [
+    "Live model endpoints and verdict branches have not been tested in this session",
+    "Teacher selection is an engineering proposal, not measured best",
+    "Sampling seed and temperature are not explicitly set",
+    "Cloud model implementations, external CyberGym source, task archives and mask map are not pinned by run manifest",
+    "Task ID isolation does not establish project or CVE family independence",
+    "Candidate task roles are enforced by this collector, not by existing GPU/export pipelines",
+    "DPO training input and GRPO mask issues remain separate"
+  ]
+}

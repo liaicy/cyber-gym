@@ -1,0 +1,24 @@
+{
+  "run_id": "retry80_deepseek-flash_v1017_2026_10_29",
+  "server": "http://127.0.0.1:18667",
+  "task_file": "/data/traj_batch/retry80_2026_10_28/tasklists/deepseek-flash.txt",
+  "split_manifest": "/data/traj_batch/next_batch_2026_10_09_plan/full_available_split.json",
+  "role": "train",
+  "models": {
+    "deepseek-flash": 1
+  },
+  "difficulty": "level1",
+  "max_steps": 80,
+  "max_tokens_per_turn": 4000,
+  "workers": 4,
+  "max_provider_concurrency": 3,
+  "call_budget": 5612,
+  "max_errors": 3,
+  "out_dir": "/data/traj_batch/retry80_2026_10_28/out_deepseek-flash_v1017",
+  "work_dir": "/data/traj_batch/retry80_2026_10_28/work_deepseek-flash_v1017",
+  "log_path": "/data/traj_batch/retry80_2026_10_28/deepseek-flash_v1017.log",
+  "cybergym_src": "/root/cybergym-src",
+  "cybergym_python": "/data/conda/envs/cybergym-py312/bin/python",
+  "unit_attempts": 3,
+  "retry_delay_seconds": 5
+}

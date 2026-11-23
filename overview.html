@@ -106,7 +106,23 @@ li::marker{color:var(--accent)}
 </section>
 
 <section>
-  <div class="sec-head"><span class="num">02 / 模型与基建</span><h2>27B + LoRA + 4 卡 FSDP</h2></div>
+  <div class="sec-head"><span class="num">02 / Harness</span><h2>模型和环境之间的那层：工具、协议、预算</h2></div>
+  <p>Harness 是模型与环境交互的运行框架——它决定模型能做哪些动作、用什么格式说话、有多少预算。这一层的设计和一致性，和模型本身一样影响成败。</p>
+  <div class="grid2">
+    <div class="panel"><div class="kv"><b>工具集</b><span><span class="k">read_file</span>（支持行范围）/ <span class="k">grep</span> / <span class="k">list_dir</span> 做代码探索，<span class="k">write_poc</span> 写候选 PoC（可反复覆写、不终止），<span class="k">submit</span> 提交并触发判题</span></div></div>
+    <div class="panel"><div class="kv"><b>动作协议</b><span>统一的扁平 JSON：<span class="k">{thought, action, action_input}</span>，而不是各家模型原生的 function-calling / Hermes 格式</span></div></div>
+    <div class="panel"><div class="kv"><b>预算</b><span>单回合有步数 / token 预算封顶，采集层另有 call budget 硬顶；步数预算要匹配模型的探索节奏（见下）</span></div></div>
+    <div class="panel"><div class="kv"><b>策略提示</b><span>system prompt 提示"有初步假设就先写一版 <span class="k">write_poc</span>"，把更谨慎模型的探索收敛到预算内</span></div></div>
+  </div>
+  <div class="note">
+    <p class="eyebrow">教训：采集 / 训练 / 评测三端必须说同一种语言</p>
+    <p style="font-size:14.5px">harness 协议三端必须一致。GRPO 训练一度默认用 TRL 原生 Hermes 工具调用格式，而 checkpoint 实际是用这里的扁平 JSON-action 训出来的——模型直接分布外（OOD），组内零方差、学不动，统一协议后才拿到首个 solved。同理，步数预算最初按 8B"读两眼就猜"的风格调，换到更谨慎的 27B 会在确认阶段就打满预算、被误判成"解不出"（<span class="disp-strong">99%</span> 的 degenerate 卡在步数上限）；放宽预算加早下笔提示后，探针任务 <span class="disp-strong">11/12</span> 翻转。</p>
+  </div>
+  <p style="font-size:14.5px;color:var(--muted)">这也是为什么对标的是 CyberGym 的 <b>Model 榜</b>：该榜要求通用 harness、不挂外部 fuzzing / 工具 / 动态知识库、不设固定阶段，比的是模型本体能力，而不是 harness 工程堆出来的成绩。</p>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">03 / 模型与基建</span><h2>27B + LoRA + 4 卡 FSDP</h2></div>
   <div class="grid2">
     <div class="panel"><div class="kv"><b>策略模型</b><span>Qwen3-8B → Qwen3.8-27B（dense，Qwen3.5 架构，含 Gated DeltaNet 层，非纯 attention）</span></div></div>
     <div class="panel"><div class="kv"><b>训练方式</b><span>LoRA（r=32，挂 <span class="k">q/k/v/o_proj + gate/up/down_proj</span>）+ 4 卡 FSDP，分片到 4 张 A800</span></div></div>
@@ -118,7 +134,7 @@ li::marker{color:var(--accent)}
 </section>
 
 <section>
-  <div class="sec-head"><span class="num">03 / 数据管线</span><h2>多模型 rollout → 环境判 tier → 三种格式导出</h2></div>
+  <div class="sec-head"><span class="num">04 / 数据管线</span><h2>多模型 rollout → 环境判 tier → 三种格式导出</h2></div>
   <p>采集是 <span class="disp-strong">task × model × K</span> 的矩阵：本地 27B 自己，加 6 个 teacher 强模型（经聚合网关调 API）各跑若干次 rollout。<span class="k">collect_batch.py</span> 按 trajectory UUID 做幂等、带 call budget 硬顶。采回的轨迹按 tier 导出成三种训练格式：</p>
   <div class="flow" style="margin:2px 0">
     <span class="chip">task × model × K</span><span class="arrow">→</span>
@@ -132,7 +148,7 @@ li::marker{color:var(--accent)}
 </section>
 
 <section>
-  <div class="sec-head"><span class="num">04 / 结果</span><h2>三种方法都试过，失败模式都定位到了根因</h2></div>
+  <div class="sec-head"><span class="num">05 / 结果</span><h2>三种方法都试过，失败模式都定位到了根因</h2></div>
 
   <div class="result collapse">
     <span class="tag bad">SFT · 8B 模式坍缩</span>
@@ -163,7 +179,7 @@ li::marker{color:var(--accent)}
 </section>
 
 <section>
-  <div class="sec-head"><span class="num">05 / 差距</span><h2>跟 SOTA 的差距，指向同一个结构缺口</h2></div>
+  <div class="sec-head"><span class="num">06 / 差距</span><h2>跟 SOTA 的差距，指向同一个结构缺口</h2></div>
   <div class="panel">
     <div class="kv"><b>公开天花板参照</b><span>阿里安全伏渊息壤 <span class="k">XekRung-27B</span>（Qwen 基座），CyberGym Level1 Model 榜 <span class="disp-strong">88.9%</span> 登顶。方法是 Agentic RL + 过程奖励（process reward）+ failure-sample 再利用。</span></div>
   </div>
@@ -180,7 +196,7 @@ li::marker{color:var(--accent)}
 </section>
 
 <section>
-  <div class="sec-head"><span class="num">06 / 一句话现状</span><h2>链路通了，根因清楚了，但还没赢过 base</h2></div>
+  <div class="sec-head"><span class="num">07 / 一句话现状</span><h2>链路通了，根因清楚了，但还没赢过 base</h2></div>
   <p>工程链路（env → rollout → 三种训练 → 评测）完整跑通，三条训练路线各自的失败模式都定位到了根因，不是未知黑箱。但<b>没有一条路线在留出集上超过不训练的 base</b>。根子是训练信号的颗粒度（行为完整度）跟任务真正要学的能力（exploit 构造的正确性）不匹配——这比调参数、加数据更难绕过，需要换一种能接触到"对不对"的信号来源。</p>
   <div class="note">
     <p class="eyebrow">当前数据的一个限定</p>

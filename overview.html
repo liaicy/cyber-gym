@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>CyberGym 轨迹蒸馏链路</title>
+<style>
+/* layout: single reading column, sectioned; tier ladder + results table as the two visual anchors */
+:root{
+  --bg:#f5f6f4; --panel:#ffffff; --panel2:#eef1ed; --fg:#1a211d; --muted:#5a6660; --faint:#88948d;
+  --line:#dde2dd; --accent:#1f6b52; --accent-soft:#1f6b5218; --warn:#9a5214; --warn-soft:#9a521416; --bad:#9a3b32;
+  --t1:#1f6b52; --t2:#4f8a5e; --t3:#b98a2e; --t4:#9a3b32;
+  --disp:"Space Grotesk",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  --sans:"Inter",-apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121714; --panel:#1a211d; --panel2:#212a25; --fg:#e7ece8; --muted:#9fb0a7; --faint:#6b7b73;
+  --line:#2a332d; --accent:#5fc49f; --accent-soft:#5fc49f1f; --warn:#e0a565; --warn-soft:#e0a56518; --bad:#e08a80;
+  --t1:#5fc49f; --t2:#7bbf86; --t3:#d7ab5a; --t4:#e08a80; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121714; --panel:#1a211d; --panel2:#212a25; --fg:#e7ece8; --muted:#9fb0a7; --faint:#6b7b73;
+  --line:#2a332d; --accent:#5fc49f; --accent-soft:#5fc49f1f; --warn:#e0a565; --warn-soft:#e0a56518; --bad:#e08a80;
+  --t1:#5fc49f; --t2:#7bbf86; --t3:#d7ab5a; --t4:#e08a80; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.6;font-size:16px;
+  padding-block:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:780px;margin:0 auto;padding-block:48px 72px;display:flex;flex-direction:column;gap:40px}
+h1{font-family:var(--disp);font-size:33px;line-height:1.15;margin:0;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+h2{font-family:var(--disp);font-size:21px;margin:0;font-weight:600;letter-spacing:-.01em}
+h3{font-size:16px;margin:0;font-weight:700}
+p{margin:0}
+a{color:var(--accent)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0}
+.lede{font-size:18px;color:var(--muted);line-height:1.55}
+code,.k{font-family:var(--mono);font-size:.86em;background:var(--panel2);padding:1px 6px;border-radius:5px;color:var(--fg);word-break:break-word}
+section{display:flex;flex-direction:column;gap:16px}
+.sec-head{display:flex;flex-direction:column;gap:6px;border-top:2px solid var(--fg);padding-top:14px}
+.num{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.1em}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}}
+.kv{display:flex;flex-direction:column;gap:3px}
+.kv b{font-size:14px}
+.kv span{color:var(--muted);font-size:14px}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-family:var(--mono);font-size:13px}
+.chip{background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:6px 10px;white-space:nowrap}
+.arrow{color:var(--faint)}
+.ladder{display:flex;flex-direction:column;gap:6px}
+.rung{display:flex;align-items:center;gap:12px;border-radius:9px;padding:10px 14px;border:1px solid var(--line)}
+.rung .nm{font-family:var(--mono);font-size:13px;font-weight:600;min-width:150px}
+.rung .ds{font-size:13.5px;color:var(--muted);min-width:0}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums;min-width:440px}
+th,td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-size:12px;letter-spacing:.03em;color:var(--muted);font-weight:600}
+td.n,th.n{text-align:right}
+tr:last-child td{border-bottom:0}
+.best{color:var(--accent);font-weight:700}
+.result{display:flex;flex-direction:column;gap:12px;border-left:3px solid var(--line);padding:4px 0 4px 18px}
+.result.collapse{border-left-color:var(--bad)}
+.result.flat{border-left-color:var(--warn)}
+.result.partial{border-left-color:var(--accent)}
+.tag{align-self:flex-start;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:20px}
+.tag.bad{background:var(--bad);color:#fff}
+.tag.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.tag.ok{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)}
+.callout{background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:10px}
+.note{background:var(--warn-soft);border:1px solid var(--warn);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:8px}
+.note .eyebrow{color:var(--warn)}
+ul{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:7px}
+li{padding-left:3px}
+li::marker{color:var(--accent)}
+.foot{color:var(--faint);font-size:13px;line-height:1.55;border-top:1px solid var(--line);padding-top:18px}
+.disp-strong{color:var(--fg);font-weight:600}
+</style>
+<main>
+
+<header style="display:flex;flex-direction:column;gap:14px">
+  <p class="eyebrow">可验证奖励 · 多轮 Agent · 轨迹蒸馏</p>
+  <h1>用环境真实判题的轨迹，把漏洞复现能力蒸馏进小模型</h1>
+  <p class="lede">目标是在资源受限场景下，让一个 4B–9B（现扩到 27B）的小模型学会在 CyberGym 上复现真实漏洞。全项目的立足点只有一条：每条轨迹的对错由真实运行 docker 镜像裁决，不是模型自评，也不是 LLM-judge。</p>
+</header>
+
+<section>
+  <div class="sec-head"><span class="num">01 / 任务</span><h2>一个可验证奖励的多轮 Agent 环境</h2></div>
+  <p>CyberGym 把每道题建成一个真实 RL 环境。给定漏洞描述加代码库，模型要写出能触发该漏洞的 PoC：</p>
+  <div class="grid2">
+    <div class="panel"><div class="kv"><b>State</b><span>工具调用的 observation：<span class="k">read_file</span> / <span class="k">grep</span> / <span class="k">list_dir</span> 的返回</span></div></div>
+    <div class="panel"><div class="kv"><b>Action</b><span>一个 JSON：<span class="k">{thought, action, action_input}</span></span></div></div>
+    <div class="panel"><div class="kv"><b>终止</b><span>模型调用 <span class="k">submit</span>，或到达步数预算</span></div></div>
+    <div class="panel"><div class="kv"><b>Reward</b><span>真实跑 vul / fix 版本 docker，看崩没崩，给离散 tier</span></div></div>
+  </div>
+  <p style="margin-top:4px">关键是奖励信号本身——不是模型打分，是环境判定，给出四档可排序的 tier，另有 <span class="k">infra_error</span> 单独剔除、不进训练信号：</p>
+  <div class="ladder">
+    <div class="rung" style="background:var(--accent-soft)"><span class="dot" style="background:var(--t1)"></span><span class="nm" style="color:var(--t1)">solved</span><span class="ds">PoC 让 vul 崩、fix 不崩，确认复现成功</span></div>
+    <div class="rung"><span class="dot" style="background:var(--t2)"></span><span class="nm" style="color:var(--t2)">crashed_unclear_fix</span><span class="ds">崩了，但 fix 版判据不明确</span></div>
+    <div class="rung"><span class="dot" style="background:var(--t3)"></span><span class="nm" style="color:var(--t3)">no_crash</span><span class="ds">写出并提交了 PoC，但没触发崩溃</span></div>
+    <div class="rung"><span class="dot" style="background:var(--t4)"></span><span class="nm" style="color:var(--t4)">degenerate</span><span class="ds">压根没写出 PoC（多为探索耗尽步数）</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">02 / 模型与基建</span><h2>27B + LoRA + 4 卡 FSDP</h2></div>
+  <div class="grid2">
+    <div class="panel"><div class="kv"><b>策略模型</b><span>Qwen3-8B → Qwen3.8-27B（dense，Qwen3.5 架构，含 Gated DeltaNet 层，非纯 attention）</span></div></div>
+    <div class="panel"><div class="kv"><b>训练方式</b><span>LoRA（r=32，挂 <span class="k">q/k/v/o_proj + gate/up/down_proj</span>）+ 4 卡 FSDP，分片到 4 张 A800</span></div></div>
+  </div>
+  <div class="note">
+    <p class="eyebrow">工程坑：静默写空 adapter</p>
+    <p style="font-size:14.5px">FSDP + PEFT 的 checkpoint 保存接口会不报错地写出空 adapter（<span class="k">SHARDED_STATE_DICT</span> 写 0 字节，<span class="k">FULL_STATE_DICT</span> 写 40 字节空文件）。最后靠手动 <span class="k">accelerator.get_state_dict()</span> + <span class="k">FSDP.summon_full_params()</span> 两道兜底才拿到真实权重。这类坑决定了"跑通"的判据必须包含产物校验，不能只看训练完成。</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">03 / 数据管线</span><h2>多模型 rollout → 环境判 tier → 三种格式导出</h2></div>
+  <p>采集是 <span class="disp-strong">task × model × K</span> 的矩阵：本地 27B 自己，加 6 个 teacher 强模型（经聚合网关调 API）各跑若干次 rollout。<span class="k">collect_batch.py</span> 按 trajectory UUID 做幂等、带 call budget 硬顶。采回的轨迹按 tier 导出成三种训练格式：</p>
+  <div class="flow" style="margin:2px 0">
+    <span class="chip">task × model × K</span><span class="arrow">→</span>
+    <span class="chip">rollout</span><span class="arrow">→</span>
+    <span class="chip">环境判 tier</span><span class="arrow">→</span>
+    <span class="chip">SFT / DPO / GRPO</span>
+  </div>
+  <div class="panel"><div class="kv"><b>SFT</b><span>按 assistant 轮拆成 (prompt, completion)，<span class="k">completion_only_loss</span>，只对模型自己说的部分算 loss</span></div></div>
+  <div class="panel"><div class="kv"><b>DPO</b><span>同一任务下按 tier 排序，最高 tier vs 最低 tier 的两条整轨迹做 pairwise；偏好方向完全锚定环境判的 tier，不掺模型自评</span></div></div>
+  <div class="panel"><div class="kv"><b>GRPO</b><span>在线 rollout，group 内算 relative advantage；reward = 终端 tier scalar + 一个很小的重复动作惩罚</span></div></div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">04 / 结果</span><h2>三种方法都试过，失败模式都定位到了根因</h2></div>
+
+  <div class="result collapse">
+    <span class="tag bad">SFT · 8B 模式坍缩</span>
+    <p>per-turn 模仿训练集里的原始动作分布，但训练集 <span class="disp-strong">56%</span> 是低价值探索动作（<span class="k">list_dir</span>/<span class="k">read_file</span>）、只有 <span class="disp-strong">20%</span> 是决定性的 <span class="k">write_poc</span>/<span class="k">submit</span>。行为克隆忠实学到了这个失衡分布：模型退化成复读同一个探索动作、无视 observation，solve 率归零，比不训练还差。</p>
+    <p style="font-size:14.5px;color:var(--muted)">排除了"target 格式脏"和"学习率太猛"两个假设。结论是行为克隆这个目标函数本身跟任务的"探索–收敛"决策结构不匹配。27B 上现在正在重新验证这个坍缩是否与模型尺寸相关（假说未证实，SFT merge 正在后台跑）。</p>
+  </div>
+
+  <div class="result flat">
+    <span class="tag warn">DPO · 五版都没超过 base</span>
+    <p>DPO 不坍缩，但从 v1 到 v4mask、w16k 五个版本的留出评测（26 题 × K=5）都没能超过不训练的 base：</p>
+    <div class="tablewrap"><table>
+      <tr><th>checkpoint</th><th class="n">solved rollout</th><th>相对 base</th></tr>
+      <tr><td>base（不训练）</td><td class="n best">18</td><td>基准</td></tr>
+      <tr><td>v2</td><td class="n">15</td><td>↓</td></tr>
+      <tr><td>v3</td><td class="n">13</td><td>↓</td></tr>
+      <tr><td>v4</td><td class="n">14</td><td>↓</td></tr>
+      <tr><td>v4mask（加 loss mask）</td><td class="n">17</td><td>最接近，仍未超</td></tr>
+    </table></div>
+    <p style="font-size:14.5px">排查定位到两个真实 bug：<b>①</b> <span class="k">render()</span> 把整段多轮对话（含环境 observation）都算进 DPO completion，loss 的 <span class="disp-strong">72–86%</span> 落在环境文本上而非模型决策 token——加 assistant-only loss mask 后数据显著改善。<b>②</b> 上下文窗口裁剪砍掉中间探索过程，模型只看到"收尾形态"，学会了 PoC 该长什么样（格式），学不到该填什么（正确性）。</p>
+    <p style="font-size:14.5px;color:var(--muted)">两个 bug 修完后，结构性瓶颈浮出来：DPO 的偏好对是 <b>trajectory 级</b>的"这条整体比那条好"，用来拟合的却是 <b>token 级</b>的生成过程，颗粒度差几个数量级。它能教"行为更完整"，教不了"构造更准确的 exploit"。</p>
+  </div>
+
+  <div class="result partial">
+    <span class="tag ok">GRPO · 8B 打通，27B 待上</span>
+    <p>GRPO 在 8B 上跑过，踩过一个协议坑：训练默认用 TRL 原生 Hermes 工具调用格式，跟 DPO 训练用的扁平 JSON-action 格式不是同一种语言，模型直接 OOD、组内零方差。统一协议后拿到过首个 solved。</p>
+    <p style="font-size:14.5px;color:var(--muted)">27B 还没上 GRPO，按"DPO 先、GRPO 后"的 staged recipe——因为 SFT 已证明坍缩、裸上 GRPO 没验证过。</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">05 / 差距</span><h2>跟 SOTA 的差距，指向同一个结构缺口</h2></div>
+  <div class="panel">
+    <div class="kv"><b>公开天花板参照</b><span>阿里安全伏渊息壤 <span class="k">XekRung-27B</span>（Qwen 基座），CyberGym Level1 Model 榜 <span class="disp-strong">88.9%</span> 登顶。方法是 Agentic RL + 过程奖励（process reward）+ failure-sample 再利用。</span></div>
+  </div>
+  <p>差距的本质不在参数量，在<b>信号的颗粒度</b>。我们现在不管 DPO 还是 GRPO，奖励都卡在 episode 级或 trajectory 级——环境里压根没有"过程中可验证"的动作：</p>
+  <ul>
+    <li><span class="k">write_poc</span> 只写字节、不验证；</li>
+    <li><span class="k">submit</span> 一验证就终止 episode。</li>
+  </ul>
+  <p>模型因此没有机会像人类研究员那样"写一版、测一版"。三条路线的失败其实都指向这同一件事：可用的监督信号都在<b>结果层</b>，缺一个<b>过程层</b>的"这一步探索对不对"的信号。</p>
+  <div class="callout">
+    <p class="eyebrow" style="color:var(--accent)">最高杠杆的下一步</p>
+    <p>加一个<b>不终止 episode</b> 的 <span class="k">test_poc</span> 工具，把"第一次真的 crash"变成一个可以独立给 reward 的中间信号，而不是只在 submit 时给一次。这让奖励第一次能接触到"对不对"这个信息，而不只是"看起来完整不完整"。</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">06 / 一句话现状</span><h2>链路通了，根因清楚了，但还没赢过 base</h2></div>
+  <p>工程链路（env → rollout → 三种训练 → 评测）完整跑通，三条训练路线各自的失败模式都定位到了根因，不是未知黑箱。但<b>没有一条路线在留出集上超过不训练的 base</b>。根子是训练信号的颗粒度（行为完整度）跟任务真正要学的能力（exploit 构造的正确性）不匹配——这比调参数、加数据更难绕过，需要换一种能接触到"对不对"的信号来源。</p>
+  <div class="note">
+    <p class="eyebrow">当前数据的一个限定</p>
+    <p style="font-size:14.5px">最新 w16k 的 107 条已有数据恰好缺了最关键的 4 题（<span class="k">arvo:3938 / arvo:47101 / oss-fuzz:370689421 / arvo:10400</span>，正是 base 最稳的几道），所以这批数据还不能直接拿来跟 base 比，需要补完整后再下结论。</p>
+  </div>
+</section>
+
+<p class="foot">数据与说法均取自项目内部文档与实验记录并经交叉核对。阿里 XekRung 的 88.9% 来自其官方宣传稿，其中仅 CyberGym 公开榜一行可独立核验，方法细节与成本数字为对方自述。本页为内部技术沟通材料。</p>
+
+</main>
+
+</body>
+</html>
